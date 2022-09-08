@@ -1,23 +1,19 @@
-import logo from './logo.svg';
 import './App.css';
+import TheWaterMap from "./map_source/TheWaterMap";
 
 function App() {
+    const mapIsReadyCallback = (map) => {
+        console.log(map);
+    };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/*<header className="App-header">*/}
+      {/*  <p>*/}
+      {/*    The Water App - V0.0.0*/}
+      {/*  </p>*/}
+      {/*</header>*/}
+      <TheWaterMap mapIsReadyCallback={mapIsReadyCallback}/>
     </div>
   );
 }

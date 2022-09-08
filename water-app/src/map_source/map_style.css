@@ -1,0 +1,6 @@
+@import '../../node_modules/maplibre-gl/dist/maplibre-gl.css';
+
+map-container {
+    height: 100%;
+    width: 100%;
+}
