@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Map } from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import './map_style.css';
 
 const TheWaterMap = ({
@@ -8,20 +8,24 @@ const TheWaterMap = ({
     const mapContainer = useRef(null);
 
     useEffect(() => {
-        const myAPIKey = '0a398cc08839490f95fc422b750edc75';
-        const mapStyle = 'https://maps.geoapify.com/v1/styles/dark-matter/style.json';
+        // const myAPIKey = 'd8a222a86303429e9c8ebbac9c9bdb95';
+        // const mapStyle = 'https://maps.geoapify.com/v1/staticmap?style=osm-bright-smooth&width=600&height=400&center=lonlat%3A-122.29009844646316%2C47.54607447032754&zoom=14.3497&marker=lonlat%3A-122.29188334609739%2C47.54403990655936%3Btype%3Aawesome%3Bcolor%3A%23bb3f73%3Bsize%3Ax-large%3Bicon%3Apaw%7Clonlat%3A-122.29282631194182%2C47.549609195001494%3Btype%3Amaterial%3Bcolor%3A%234c905a%3Bicon%3Atree%3Bicontype%3Aawesome%7Clonlat%3A-122.28726954893025%2C47.541766557545884%3Btype%3Amaterial%3Bcolor%3A%234c905a%3Bicon%3Atree%3Bicontype%3Aawesome&apiKey=d8a222a86303429e9c8ebbac9c9bdb95'
+        //
+        // const initialState = {
+        //     lng: 87.5,
+        //     lat: 33.2,
+        //     zoom: 10,
+        // };
+        // const map = new Map({
+        //     container: mapContainer.current,
+        //     style: `${mapStyle}`,
+        //     center: [initialState.lng, initialState.lat],
+        //     zoom: initialState.zoom,
+        // });
 
-        const initialState = {
-            lng: 11,
-            lat: 49,
-            zoom: 4,
-        };
-
-        const map = new Map({
+        const map = new maplibregl.Map({
             container: mapContainer.current,
-            style: `${mapStyle}?apiKey=${myAPIKey}`,
-            center: [initialState.lng, initialState.lat],
-            zoom: initialState.zoom,
+            style: 'https://maps.geoapify.com/v1/styles/osm-carto/style.json?apiKey=d8a222a86303429e9c8ebbac9c9bdb95',
         });
 
         mapIsReadyCallback(map);
