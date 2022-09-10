@@ -1,15 +1,9 @@
-.App {
-  text-align: center;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-}
-
-#the-water-map {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 100%;
+.map-container {
+    background-image: linear-gradient(to bottom, #202020, #000000 70%);
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    overflow: hidden;
+    z-index: -1;
 }

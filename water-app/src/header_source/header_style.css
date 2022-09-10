@@ -1,0 +1,38 @@
+#water-app-header {
+    width: 100%;
+    background: #404040;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 5;
+    position: relative;
+}
+
+h1 {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 5vh;
+    padding-top: 2vh;
+    padding-bottom: 1vh;
+    text-align: center;
+    font-weight: bold;
+    margin: auto;
+    color: #eee;
+}
+
+h4 {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 1vh;
+    padding-top: 1vh;
+    text-align: center;
+    color: #202020;
+}
+
+.header-td {
+    margin-left: 5vw;
+    margin-right: 5vw;
+    vertical-align: bottom;
+}
+
+.header-table {
+    table-layout: fixed;
+    width: 100vw
+}
