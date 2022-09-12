@@ -1,23 +1,29 @@
 import React, { Component }  from 'react';
+import Dialog from "@material-ui/core/Dialog";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
 import fetch from 'node-fetch';
 
 import "./search_bar_style.css"
+import {Button, DialogContent} from "@material-ui/core";
 
 class LocationSearchBar extends React.Component {
     constructor({props, callback, apiKey}) {
         super(props);
 
-        // this.state = { callback: () => { console.log("LocationSearchBar callback run without being set first!")},
-        //                apiKey: "d8a222a86303429e9c8ebbac9c9bdb95"
-        //              }
         this.state = { callback: callback,
-                       apiKey: apiKey }
+                       apiKey: apiKey,
+                       alertOpen: false,
+                       alertText: ""}
 
         this.setState = this.setState.bind(this)
         this.checkResponseCode = this.checkResponseCode.bind(this)
         this.processJSONData = this.processJSONData.bind(this)
         this.processInput = this.processInput.bind(this)
         this.checkForEnter = this.checkForEnter.bind(this)
+        this.alertUser = this.alertUser.bind(this)
+        this.handleAlertClose = this.handleAlertClose.bind(this)
     }
 
     // Helper to check HTTP error code status
@@ -25,8 +31,8 @@ class LocationSearchBar extends React.Component {
         if(response.ok)
             return response
         else
-            // TODO: show error dialogue instead
-            throw new Error('Response to geocode invalid: ${res.status} ${res.statusText}')
+            this.alertUser("Got a bad response to the location search. May be having connection problems to the map server")
+            return ""
     }
 
     // Helper to call callback with results
@@ -49,7 +55,7 @@ class LocationSearchBar extends React.Component {
             .then(json => {
                 this.processJSONData(json.results[0].lat, json.results[0].lon)
             })
-            .catch(error => console.log("Caught error in geocoding: " + error))
+            .catch(error => this.alertUser("Couldn't find a location based on what you entered. Try again using a city and state, or an address!"))
     }
 
     // Check for enter characters in the box so hitting enter after an address works correctly
@@ -58,7 +64,20 @@ class LocationSearchBar extends React.Component {
             this.processInput()
     }
 
+    // Helper to display alerts to user
+    alertUser(errorMessage) {
+        console.log(errorMessage)
+
+        this.setState({alertOpen: true, alertText: errorMessage})
+    }
+
+    // Run by alert exit button
+    handleAlertClose() {
+        this.setState({alertOpen: false, alertText: ""})
+    }
+
     // Render method overload
+    // Dialogue object will only be rendered if there is an error and the state is updated
     render() {
         return (<div id={"location-search-bar"}>
             <table>
@@ -73,6 +92,20 @@ class LocationSearchBar extends React.Component {
                 </tr>
                 </tbody>
             </table>
+            <Dialog open={this.state.alertOpen} onClose={this.handleAlertClose}>
+                <DialogTitle>{"Something went wrong :/"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {this.state.alertText}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.handleAlertClose}
+                            color="primary" autoFocus>
+                        Got it
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>)
     }
 }

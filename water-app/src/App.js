@@ -2,6 +2,7 @@ import WaterMap from "./map_source/WaterMap";
 import Header from "./header_source/Header";
 import RenderRain from "./rain_source/RenderRain";
 import LocationSearchBar from "./search_bar_source/LocationSearchBar";
+
 import React from "react";
 
 import "./App.css";
