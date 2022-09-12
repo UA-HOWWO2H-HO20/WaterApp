@@ -1,11 +1,27 @@
-import React from "react";
+import React, { Component }  from 'react';
 import fetch from 'node-fetch';
 
 import "./search_bar_style.css"
 
-const LocationSearchBar = (props) => {
+class LocationSearchBar extends React.Component {
+    constructor({props, callback, apiKey}) {
+        super(props);
+
+        // this.state = { callback: () => { console.log("LocationSearchBar callback run without being set first!")},
+        //                apiKey: "d8a222a86303429e9c8ebbac9c9bdb95"
+        //              }
+        this.state = { callback: callback,
+                       apiKey: apiKey }
+
+        this.setState = this.setState.bind(this)
+        this.checkResponseCode = this.checkResponseCode.bind(this)
+        this.processJSONData = this.processJSONData.bind(this)
+        this.processInput = this.processInput.bind(this)
+        this.checkForEnter = this.checkForEnter.bind(this)
+    }
+
     // Helper to check HTTP error code status
-    const checkResponseCode = (response) => {
+    checkResponseCode(response) {
         if(response.ok)
             return response
         else
@@ -14,49 +30,51 @@ const LocationSearchBar = (props) => {
     }
 
     // Helper to call callback with results
-    const processJSONData = (lat, long) => {
+    processJSONData(lat, long) {
         console.log("Refreshing page using geocode results (lat: " + lat + ", lng: " + long + ")")
-        props.callback({lng: long, lat: lat, zoom: 7})
+        this.state.callback({lng: long, lat: lat, zoom: 7})
     }
 
     // Process the input of the text field
-    const processInput = () => {
+    processInput() {
         const data = document.getElementById("location-search-bar-field").value
         console.log("Processing request for location: " + data)
 
         // Format string for API request URL
         const formattedData = encodeURIComponent(data)
-        const apiKey = "d8a222a86303429e9c8ebbac9c9bdb95"
 
-        fetch("https://api.geoapify.com/v1/geocode/search?text=" + formattedData + "&apiKey=" + apiKey + "&format=json", { method: 'GET' })
-            .then(checkResponseCode)
+        fetch("https://api.geoapify.com/v1/geocode/search?text=" + formattedData + "&apiKey=" + this.state.apiKey + "&format=json", { method: 'GET' })
+            .then(this.checkResponseCode)
             .then(res => res.json())
             .then(json => {
-                processJSONData(json.results[0].lat, json.results[0].lon)
+                this.processJSONData(json.results[0].lat, json.results[0].lon)
             })
             .catch(error => console.log("Caught error in geocoding: " + error))
     }
 
     // Check for enter characters in the box so hitting enter after an address works correctly
-    const checkForEnter = (event) => {
+    checkForEnter(event) {
         if(event.key === 'Enter')
-            processInput()
+            this.processInput()
     }
 
-    return (<div id={"location-search-bar"}>
-        <table>
-            <tbody>
+    // Render method overload
+    render() {
+        return (<div id={"location-search-bar"}>
+            <table>
+                <tbody>
                 <tr>
                     <td id={"location-search-bar-td-first"}>
-                        <input id={"location-search-bar-field"} type="text" placeholder={"Where to?"} onKeyDown={(e) => { checkForEnter(e) }}/>
+                        <input id={"location-search-bar-field"} type="text" placeholder={"Where to?"} onKeyDown={(e) => { this.checkForEnter(e) }}/>
                     </td>
                     <td id={"location-search-bar-td"}>
-                        <button id={"location-search-bar-button"} onClick={() => { processInput() }}>Go!</button>
+                        <button id={"location-search-bar-button"} onClick={() => { this.processInput() }}>Go!</button>
                     </td>
                 </tr>
-            </tbody>
-        </table>
-    </div>)
+                </tbody>
+            </table>
+        </div>)
+    }
 }
 
 export default LocationSearchBar;

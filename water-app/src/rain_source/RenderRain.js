@@ -1,16 +1,30 @@
+import React from "react";
+
 import "./rain_style.css"
 
-const RenderRain = () => {
-    let hrElement;
-    let counter = 30;
-    for (let i = 0; i < counter; i++) {
-        hrElement = document.createElement("HR");
+class RenderRain extends React.Component {
+    constructor({props, dropletCount}) {
+        super(props);
 
-        hrElement.style.left = Math.floor(Math.random() * window.innerWidth) + "px";
-        hrElement.style.animationDuration = 0.2 + Math.random() * 0.3 + "s";
-        hrElement.style.animationDelay = Math.random() * 5 + "s";
+        this.state = { dropletCount: dropletCount }
 
-        document.body.appendChild(hrElement);
+        this.setState = this.setState.bind(this)
+    }
+
+    render() {
+        let hrElement;
+        let counter = 30;
+        for (let i = 0; i < counter; i++) {
+            hrElement = document.createElement("HR");
+
+            hrElement.style.left = Math.floor(Math.random() * window.innerWidth) + "px";
+            hrElement.style.animationDuration = 0.2 + Math.random() * 0.3 + "s";
+            hrElement.style.animationDelay = Math.random() * 5 + "s";
+
+            document.body.appendChild(hrElement);
+        }
+
+        return <div></div>
     }
 }
 

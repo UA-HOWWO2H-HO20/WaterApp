@@ -1,13 +1,13 @@
 import maplibregl from "maplibre-gl";
-import {useEffect} from "react";
+import React, {useEffect} from "react";
 
 import "./map_style.css"
 
-const WaterMap = ({initialLat, initialLng, initialZoom}) => {
+const WaterMap = ({initialLat, initialLng, initialZoom, apiKey}) => {
     useEffect(() => {
         let map = new maplibregl.Map({
             container: 'the-water-map',
-            style: 'https://maps.geoapify.com/v1/styles/dark-matter-brown/style.json?apiKey=d8a222a86303429e9c8ebbac9c9bdb95',
+            style: 'https://maps.geoapify.com/v1/styles/dark-matter-brown/style.json?apiKey=' + apiKey,
             center: [initialLng, initialLat],
             zoom: initialZoom,
         });

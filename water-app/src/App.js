@@ -17,6 +17,9 @@ class App extends React.Component {
             zoom: 7
         }
 
+        // GeoApify API key
+        this.apiKey = "d8a222a86303429e9c8ebbac9c9bdb95"
+
         this.setState = this.setState.bind(this)
     }
 
@@ -24,9 +27,9 @@ class App extends React.Component {
         return (
             <div className="App">
                 <Header />
-                <LocationSearchBar callback={this.setState}/>
+                <LocationSearchBar callback={this.setState} apiKey={this.apiKey}/>
                 <div className={"map-container"}>
-                    <WaterMap initialLat={this.state.lat} initialLng={this.state.lng} initialZoom={this.state.zoom}/>
+                    <WaterMap initialLat={this.state.lat} initialLng={this.state.lng} initialZoom={this.state.zoom} apiKey={this.apiKey}/>
                     <RenderRain />
                 </div>
             </div>

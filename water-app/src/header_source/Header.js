@@ -1,9 +1,15 @@
 import "./header_style.css"
+import React from "react";
 
-const Header = () => {
-    return (<div id={"water-app-header"}>
-        <table className={"header-table"}>
-            <tbody>
+class Header extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (<div id={"water-app-header"}>
+            <table className={"header-table"}>
+                <tbody>
                 <tr>
                     <td className={"header-td"}>
                         <p></p>
@@ -15,9 +21,10 @@ const Header = () => {
                         <h4>Brought to you by HOWWO2H-HO20</h4>
                     </td>
                 </tr>
-            </tbody>
-        </table>
-    </div>)
-};
+                </tbody>
+            </table>
+        </div>)
+    }
+}
 
 export default Header;
