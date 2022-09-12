@@ -1,27 +1,37 @@
-import "./App.css";
 import WaterMap from "./map_source/WaterMap";
 import Header from "./header_source/Header";
 import RenderRain from "./rain_source/RenderRain";
+import LocationSearchBar from "./search_bar_source/LocationSearchBar";
+import React from "react";
 
-function App() {
-    // Coordinates for tuscaloosa
-    const initialState = {
-        lng: -86.9,
-        lat: 32.3,
-        zoom: 7
+import "./App.css";
+
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+
+        // Coordinates for tuscaloosa
+        this.state = {
+            lng: -86.9,
+            lat: 32.3,
+            zoom: 7
+        }
+
+        this.setState = this.setState.bind(this)
     }
 
-  return (
-    <div className="App">
-        <body>
-            <Header />
-            <div className={"map-container"}>
-                <WaterMap initialLat={initialState.lat} initialLng={initialState.lng} initialZoom={initialState.zoom}/>
-                <RenderRain />
+    render() {
+        return (
+            <div className="App">
+                <Header />
+                <LocationSearchBar callback={this.setState}/>
+                <div className={"map-container"}>
+                    <WaterMap initialLat={this.state.lat} initialLng={this.state.lng} initialZoom={this.state.zoom}/>
+                    <RenderRain />
+                </div>
             </div>
-        </body>
-    </div>
-  );
+        )
+    }
 }
 
 export default App;

@@ -17,4 +17,5 @@ const WaterMap = ({initialLat, initialLng, initialZoom}) => {
 
     return <div id="the-water-map"></div>;
 };
+
 export default WaterMap
