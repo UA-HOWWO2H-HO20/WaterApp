@@ -7,12 +7,17 @@
     position: relative;
 }
 
-p {
+.footer-label {
     font-family: "Courier New", Courier, monospace;
-    font-size: 1vh;
-    padding-top: 1vh;
+    font-size: 2vh;
+    padding-top: 2vh;
+    padding-bottom: 1vh;
     text-align: center;
-    color: #202020;
+    font-weight: bold;
+    margin: auto;
+    color: #eee;
+    text-decoration: none;
+    display: block;
 }
 
 .footer-td {
@@ -22,6 +27,5 @@ p {
 }
 
 .footer-table {
-    table-layout: fixed;
     width: 100vw
 }

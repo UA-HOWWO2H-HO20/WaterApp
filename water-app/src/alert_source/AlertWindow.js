@@ -23,8 +23,10 @@ class AlertWindow extends React.Component {
     }
 
     // Run by exit button
-    handleAlertClose() {
-        this.setState({open: false, errorText: "There was an unexpected issue"})
+    async handleAlertClose() {
+        this.setState({open: false})
+        await new Promise(r => setTimeout(r, 200));
+        this.setState({headerText: "Something went wrong :/", errorText: "There was an unexpected issue"})
     }
 
     render() {
