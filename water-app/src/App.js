@@ -6,6 +6,7 @@ import LocationSearchBar from "./search_bar_source/LocationSearchBar";
 import React from "react";
 
 import "./App.css";
+import Footer from "./footer_source/Footer";
 
 class App extends React.Component {
     constructor(props) {
@@ -33,6 +34,7 @@ class App extends React.Component {
                     <WaterMap initialLat={this.state.lat} initialLng={this.state.lng} initialZoom={this.state.zoom} apiKey={this.apiKey}/>
                     <RenderRain />
                 </div>
+                <Footer />
             </div>
         )
     }
