@@ -1,21 +1,15 @@
-import React, { Component }  from 'react';
-import Dialog from "@material-ui/core/Dialog";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
+import React  from 'react';
+import AlertWindow from "../alert_source/AlertWindow";
 import fetch from 'node-fetch';
 
 import "./search_bar_style.css"
-import {Button, DialogContent} from "@material-ui/core";
 
 class LocationSearchBar extends React.Component {
     constructor({props, callback, apiKey}) {
         super(props);
 
         this.state = { callback: callback,
-                       apiKey: apiKey,
-                       alertOpen: false,
-                       alertText: ""}
+                       apiKey: apiKey }
 
         this.setState = this.setState.bind(this)
         this.checkResponseCode = this.checkResponseCode.bind(this)
@@ -23,7 +17,9 @@ class LocationSearchBar extends React.Component {
         this.processInput = this.processInput.bind(this)
         this.checkForEnter = this.checkForEnter.bind(this)
         this.alertUser = this.alertUser.bind(this)
-        this.handleAlertClose = this.handleAlertClose.bind(this)
+
+        this.setAlertCallback = (func) => { this.alertSetStateReference = func }
+        this.alertSetStateReference = () => {}
     }
 
     // Helper to check HTTP error code status
@@ -55,7 +51,7 @@ class LocationSearchBar extends React.Component {
             .then(json => {
                 this.processJSONData(json.results[0].lat, json.results[0].lon)
             })
-            .catch(error => this.alertUser("Couldn't find a location based on what you entered. Try again using a city and state, or an address!"))
+            .catch(() => this.alertUser("Couldn't find a location based on what you entered. Try again using a city and state, or an address!"))
     }
 
     // Check for enter characters in the box so hitting enter after an address works correctly
@@ -68,12 +64,7 @@ class LocationSearchBar extends React.Component {
     alertUser(errorMessage) {
         console.log(errorMessage)
 
-        this.setState({alertOpen: true, alertText: errorMessage})
-    }
-
-    // Run by alert exit button
-    handleAlertClose() {
-        this.setState({alertOpen: false, alertText: ""})
+        this.alertSetStateReference({open: true, errorText: errorMessage})
     }
 
     // Render method overload
@@ -92,20 +83,7 @@ class LocationSearchBar extends React.Component {
                 </tr>
                 </tbody>
             </table>
-            <Dialog open={this.state.alertOpen} onClose={this.handleAlertClose}>
-                <DialogTitle>{"Something went wrong :/"}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {this.state.alertText}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.handleAlertClose}
-                            color="primary" autoFocus>
-                        Got it
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <AlertWindow setStateReference={ this.setAlertCallback }/>
         </div>)
     }
 }
