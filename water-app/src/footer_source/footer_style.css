@@ -1,0 +1,31 @@
+#water-app-footer {
+    width: 100%;
+    background: #404040;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 5;
+    position: relative;
+}
+
+.footer-label {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 2vh;
+    padding-top: 2vh;
+    padding-bottom: 1vh;
+    text-align: center;
+    font-weight: bold;
+    margin: auto;
+    color: #eee;
+    text-decoration: none;
+    display: block;
+}
+
+.footer-td {
+    margin-left: 5vw;
+    margin-right: 5vw;
+    vertical-align: bottom;
+}
+
+.footer-table {
+    width: 100vw
+}
