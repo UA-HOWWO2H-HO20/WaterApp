@@ -95,22 +95,23 @@ const WaterMap = ({initialLat,
         }
 
         map.on('load', function () {
-            map.addSource('wms-test-source', {
-                'type': 'raster',
-                'tiles': [
-                    'http://waterapp.undo.it:8901/geoserver/wms?&service=WMS&request=GetMap&layers=topp%3Astates&styles=population&format=image%2Fjpeg&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG%3A3857&bbox={bbox-epsg-3857}'
-                ],
-                'tileSize': 256
-            });
-
-            map.addLayer(
-                {
-                    'id': 'wms-test-layer',
-                    'type': 'raster',
-                    'source': 'wms-test-source',
-                    'paint': {}
-                }
-            );
+            // Layer for population map server example
+            // map.addSource('wms-test-source', {
+            //     'type': 'raster',
+            //     'tiles': [
+            //         'http://waterapp.undo.it:8901/geoserver/wms?&service=WMS&request=GetMap&layers=topp%3Astates&styles=population&format=image%2Fjpeg&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG%3A3857&bbox={bbox-epsg-3857}'
+            //     ],
+            //     'tileSize': 256
+            // });
+            //
+            // map.addLayer(
+            //     {
+            //         'id': 'wms-test-layer',
+            //         'type': 'raster',
+            //         'source': 'wms-test-source',
+            //         'paint': {}
+            //     }
+            // );
 
             if(displayUserLocation)
             {

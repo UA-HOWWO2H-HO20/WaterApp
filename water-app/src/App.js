@@ -52,7 +52,7 @@ class App extends React.Component {
                         </tr>
                         </tbody>
                     </table>
-                    <RenderRain />
+                    {/*<RenderRain />*/}
                 </div>
                 <Footer />
             </div>

@@ -22,21 +22,23 @@ class OverlaySelector extends React.Component {
                                 <img src={location} alt={"Your location"} onClick={() => {this.locationClickFunction()}}></img>
                             </td>
                         </tr>
-                        <tr className={"overlay-selector-tr"} >
-                            <td className={"overlay-selector-td"}>
-                                2
-                            </td>
-                        </tr>
-                        <tr className={"overlay-selector-tr"} >
-                            <td className={"overlay-selector-td"}>
-                                3
-                            </td>
-                        </tr>
-                        <tr className={"overlay-selector-tr"} >
-                            <td className={"overlay-selector-td"}>
-                                4
-                            </td>
-                        </tr>
+
+                        {/*TODO: add these back as more overlays are defined*/}
+                        {/*<tr className={"overlay-selector-tr"} >*/}
+                        {/*    <td className={"overlay-selector-td"}>*/}
+                        {/*        2*/}
+                        {/*    </td>*/}
+                        {/*</tr>*/}
+                        {/*<tr className={"overlay-selector-tr"} >*/}
+                        {/*    <td className={"overlay-selector-td"}>*/}
+                        {/*        3*/}
+                        {/*    </td>*/}
+                        {/*</tr>*/}
+                        {/*<tr className={"overlay-selector-tr"} >*/}
+                        {/*    <td className={"overlay-selector-td"}>*/}
+                        {/*        4*/}
+                        {/*    </td>*/}
+                        {/*</tr>*/}
                     </tbody>
                 </table>
             </div>)
