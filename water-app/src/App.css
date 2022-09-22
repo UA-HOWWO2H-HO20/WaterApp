@@ -7,3 +7,18 @@
     overflow: hidden;
     z-index: -1;
 }
+
+.map-table {
+    table-layout: fixed;
+    width: 100vw
+}
+
+.map-td {
+    width: 80vw;
+    height: 80vh;
+    display: flex;
+}
+
+.map-sidebar-td {
+    width: 10vw;
+}

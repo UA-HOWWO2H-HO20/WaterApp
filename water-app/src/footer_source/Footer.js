@@ -10,13 +10,10 @@ class Footer extends React.Component {
         this.setAlertCallback = (func) => { this.alertSetStateReference = func }
         this.alertSetStateReference = () => {}
 
-
         this.aboutHeader = "About this project"
         this.aboutText = "\tThe water app was created by a team of undergraduate computer science students at the The University of Alabama, as a senior design project. This app was created in collaboration with the Alabama Water Institute, who are responsible for its development and maintenance."
         this.sourcesHeader = "Data sources"
         this.sourcesText ="Insert sources here"
-        this.connectionHeader = "Connection status"
-        this.connectionText = "Insert server connection test here"
     }
 
     render() {
@@ -30,9 +27,6 @@ class Footer extends React.Component {
                             </td>
                             <td className={"footer-td"}>
                                 <p className={"footer-label"} onClick={() => { this.alertSetStateReference({open: true, headerText: this.sourcesHeader, errorText: this.sourcesText }) } }>Sources</p>
-                            </td>
-                            <td className={"footer-td"}>
-                                <p className={"footer-label"} onClick={() => { this.alertSetStateReference({open: true, headerText: this.connectionHeader, errorText: this.connectionText }) } }>Check connection</p>
                             </td>
                             <td className={"footer-td"}>
                                 <a className={"footer-label"} href={"https://github.com/andyhansen7/WaterApp"} >View source code</a>

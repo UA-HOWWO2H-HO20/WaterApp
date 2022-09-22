@@ -1,6 +1,6 @@
 #water-app-footer {
     width: 100%;
-    background: #404040;
+    background: #343134;
     justify-content: space-between;
     align-items: center;
     z-index: 5;
@@ -15,7 +15,7 @@
     text-align: center;
     font-weight: bold;
     margin: auto;
-    color: #eee;
+    color: #939293;
     text-decoration: none;
     display: block;
 }
@@ -24,6 +24,7 @@
     margin-left: 5vw;
     margin-right: 5vw;
     vertical-align: bottom;
+    width: 20vw;
 }
 
 .footer-table {

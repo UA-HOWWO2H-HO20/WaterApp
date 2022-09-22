@@ -1,0 +1,21 @@
+.overlay-selector-container {
+    height: 80vh;
+    display: block;
+}
+
+.overlay-selector-td {
+    width: 5vh;
+    height: 5vh;
+    background-color: #343134;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 1vh;
+}
+
+.overlay-selector-table {
+    margin-top: 3vh;
+    margin-bottom: 5vh;
+    margin-left: auto;
+    margin-right: 0;
+    vertical-align: top;
+}
