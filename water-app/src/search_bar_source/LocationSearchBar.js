@@ -5,11 +5,10 @@ import fetch from 'node-fetch';
 import "./search_bar_style.css"
 
 class LocationSearchBar extends React.Component {
-    constructor({props, callback, apiKey}) {
+    constructor({props, apiKey}) {
         super(props);
 
-        this.state = { callback: callback,
-                       apiKey: apiKey }
+        this.state = { apiKey: apiKey }
 
         this.setState = this.setState.bind(this)
         this.checkResponseCode = this.checkResponseCode.bind(this)
@@ -32,9 +31,10 @@ class LocationSearchBar extends React.Component {
     }
 
     // Helper to call callback with results
-    processJSONData(lat, long) {
-        console.log("Refreshing page using geocode results (lat: " + lat + ", lng: " + long + ")")
-        this.state.callback({lng: long, lat: lat, zoom: 7})
+    processJSONData(lat, lng) {
+        console.log("Refreshing page using geocode results (lat: " + lat + ", lng: " + lng + ")")
+
+        document.dispatchEvent(new CustomEvent('location-search', { detail: { lat: lat, lng: lng }}));
     }
 
     // Process the input of the text field

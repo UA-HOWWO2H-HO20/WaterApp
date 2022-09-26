@@ -155,8 +155,11 @@ class WaterMap extends React.Component {
     }
 
     handleMarkerDotEvent = () => {
-        this.setState({displayMarkerDot: !this.state.displayMarkerDot});
-        this.renderMap();
+        this.setState({displayMarkerDot: !this.state.displayMarkerDot}, () => { this.renderMap(); });
+    }
+
+    handleLocationSearchEvent = (event) => {
+        this.setState({lat: event.detail.lat, lng: event.detail.lng}, () => { this.renderMap(); });
     }
 
     componentDidMount() {
@@ -164,6 +167,7 @@ class WaterMap extends React.Component {
 
         // Create event listeners
         document.addEventListener('toggle-marker-dot', this.handleMarkerDotEvent);
+        document.addEventListener('location-search', this.handleLocationSearchEvent);
     }
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -173,6 +177,7 @@ class WaterMap extends React.Component {
     componentWillUnmount() {
         // Remove event listeners
         document.removeEventListener('toggle-marker-dot', this.handleMarkerDotEvent);
+        document.removeEventListener('location-search', this.handleLocationSearchEvent);
     }
 
     render() {
