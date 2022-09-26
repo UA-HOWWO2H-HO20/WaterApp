@@ -23,22 +23,16 @@ class App extends React.Component {
         this.apiKey = "d8a222a86303429e9c8ebbac9c9bdb95"
 
         this.setState = this.setState.bind(this);
-        this.getState = this.getState.bind(this);
 
         // Create custom events
         this.markerDotEvent = new Event('toggle-marker-dot');
-    }
-
-    // Returns the current state
-    getState() {
-        return this.state;
     }
 
     render() {
         return (
             <div className="App">
                 <Header />
-                <LocationSearchBar callback={this.setState} apiKey={this.apiKey}/>
+                <LocationSearchBar apiKey={this.apiKey}/>
                 <div className={"map-container"}>
                     <table className={"map-table"}>
                         <tbody>
