@@ -14,6 +14,11 @@
     vertical-align: top;
 }
 
+#gif-image-play-button {
+    width: 2vw;
+    height: 2vw;
+}
+
 #gif-image-frame-slider {
     width: 50vw;
 }

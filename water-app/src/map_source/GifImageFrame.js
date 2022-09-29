@@ -1,6 +1,8 @@
 import React from "react";
 import gifFrames from "gif-frames";
-import {Slider} from "@mui/material";
+import {Slider, Stack, SvgIcon} from "@mui/material";
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 import './gif_image_frame_style.css'
 
@@ -10,11 +12,10 @@ class GifImageFrame extends React.Component {
         super(props);
 
         this.state = {
-            useRange: true,
-            minFrame: 0,
-            maxFrame: 14,
-            framePeriodMS: 300,
-            running: true,
+            minFrame: 1,
+            maxFrame: 15,
+            framePeriodMS: 500,
+            running: false,
             currentFrame: 0
         };
 
@@ -24,6 +25,7 @@ class GifImageFrame extends React.Component {
         this.renderImage = this.renderImage.bind(this);
         this.displayData = this.displayData.bind(this);
         this.handleSliderInput = this.handleSliderInput.bind(this);
+        this.handlePlayButtonClick = this.handlePlayButtonClick.bind(this);
 
         this.sliderRef = React.createRef();
     }
@@ -60,7 +62,7 @@ class GifImageFrame extends React.Component {
     }
 
     async displayData() {
-        if(this.state.useRange)
+        if(this.state.running)
         {
             this.setState({currentFrame: this.state.currentFrame + 1});
 
@@ -74,16 +76,30 @@ class GifImageFrame extends React.Component {
         this.renderImage(this.state.currentFrame);
     }
 
-    async componentDidMount() {
-        await this.displayData();
+    componentDidMount() {
+        setTimeout(this.displayData, 1);
     }
 
-    async handleSliderInput(newValue) {
-        this.setState({useRange: false, currentFrame: newValue});
-        await this.displayData();
+    handleSliderInput(newValue) {
+        this.setState({running: false, currentFrame: newValue});
+
+        setTimeout(this.displayData, 1);
+    }
+
+    handlePlayButtonClick() {
+        const oldState = this.state.running;
+        this.setState({running: !oldState});
+
+        setTimeout(this.displayData, 1);
     }
 
     render() {
+        let pausePlayIcon = <PauseIcon />;
+
+        if(!this.state.running) {
+            pausePlayIcon = <PlayArrowIcon />
+        }
+
         return (
             <div id="gif-image-frame-container">
                 <table>
@@ -95,18 +111,23 @@ class GifImageFrame extends React.Component {
                         </tr>
                     <tr>
                         <td>
-                            <Slider
-                                ref={this.sliderRef}
-                                id="gif-image-frame-slider"
-                                aria-label="GIF Frame"
-                                value={this.state.currentFrame}
-                                valueLabelDisplay="auto"
-                                step={1}
-                                marks
-                                min={this.state.minFrame}
-                                max={this.state.maxFrame + 1}
-                                onChange={(e, val) => { this.handleSliderInput(val); }}
-                            />
+                            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
+                                <SvgIcon id="gif-image-play-button" color="primary" onClick={(event) => { this.handlePlayButtonClick(); }}>
+                                    {pausePlayIcon}
+                                </SvgIcon>
+                                <Slider
+                                    ref={this.sliderRef}
+                                    id="gif-image-frame-slider"
+                                    aria-label="GIF Frame"
+                                    value={this.state.currentFrame}
+                                    valueLabelDisplay="auto"
+                                    step={1}
+                                    marks
+                                    min={this.state.minFrame}
+                                    max={this.state.maxFrame}
+                                    onChange={(e, val) => { this.handleSliderInput(val); }}
+                                />
+                            </Stack>
                         </td>
                     </tr>
                     </tbody>
