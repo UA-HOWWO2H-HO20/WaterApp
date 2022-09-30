@@ -1,0 +1,24 @@
+#gif-image-frame-container {
+    text-align: center;
+    width: 80vw;
+    display: block;
+    margin: 3vh auto 5vh;
+    vertical-align: top;
+}
+
+#gif-image-frame {
+    margin: 0;
+    padding: 0;
+    width: 80vw;
+    height: 50vh;
+    vertical-align: top;
+}
+
+#gif-image-play-button {
+    width: 2vw;
+    height: 2vw;
+}
+
+#gif-image-frame-slider {
+    width: 50vw;
+}

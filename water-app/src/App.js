@@ -1,9 +1,7 @@
 import React from "react";
-import WaterMap from "./map_source/WaterMap";
 import Header from "./header_source/Header";
-import LocationSearchBar from "./search_bar_source/LocationSearchBar";
 import Footer from "./footer_source/Footer";
-import OverlaySelector from "./overlay_selector_source/OverlaySelector"
+import GifImageFrame from "./map_source/GifImageFrame"
 
 import "./App.css";
 
@@ -32,19 +30,16 @@ class App extends React.Component {
         return (
             <div className="App">
                 <Header />
-                <LocationSearchBar apiKey={this.apiKey}/>
+                {/*<LocationSearchBar apiKey={this.apiKey}/>*/}
                 <div className={"map-container"}>
                     <table className={"map-table"}>
                         <tbody>
                         <tr>
                             <td className={"map-sidebar-td"}>
-                                <OverlaySelector locationClickFunction={() => { document.dispatchEvent(this.markerDotEvent); }}/>
-                            </td>
+                                {/*Horizontal spacing to center map*/}
+                                <p></p>                            </td>
                             <td className={"map-td"}>
-                                    <WaterMap initialLat={this.state.lat}
-                                              initialLng={this.state.lng}
-                                              initialZoom={this.state.zoom}
-                                              apiKey={this.apiKey} />
+                                    <GifImageFrame />
                             </td>
                             <td className={"map-sidebar-td"}>
                                 {/*Horizontal spacing to center map*/}
@@ -53,7 +48,6 @@ class App extends React.Component {
                         </tr>
                         </tbody>
                     </table>
-                    {/*<RenderRain />*/}
                 </div>
                 <Footer />
             </div>
