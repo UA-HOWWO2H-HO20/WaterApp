@@ -12,10 +12,10 @@ class GifImageFrame extends React.Component {
         super(props);
 
         this.state = {
-            minFrame: 1,
-            maxFrame: 15,
+            minFrame: 0,
+            maxFrame: 14,
             framePeriodMS: 500,
-            running: false,
+            running: true,
             currentFrame: 0
         };
 
@@ -30,35 +30,73 @@ class GifImageFrame extends React.Component {
         this.sliderRef = React.createRef();
     }
 
-    renderImage(frameNumber) {
+    renderImage(frameNumber, minFrame) {
         // Render the image
-        gifFrames({ url: 'https://media.giphy.com/media/8VSaCyIdcnbuE/giphy.gif', frames: frameNumber, outputType: 'canvas' })
-            .then(function (frameData) {
-                // Create the image
-                let image = frameData[0].getImage();
-                // console.log(`Image loaded is ${image.width}x${image.height} px`)
+        if(frameNumber > minFrame)
+        {
+            gifFrames({ url: 'https://media.giphy.com/media/8VSaCyIdcnbuE/giphy.gif', frames: `${minFrame}-${frameNumber}`, outputType: 'canvas' })
+                .then(function (frameData) {
 
-                // Create canvas object
-                let canvas = document.getElementById("gif-image-frame");
-                let context = canvas.getContext('2d');
 
-                // Set canvas size
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+                    // Create canvas object
+                    let canvas = document.getElementById("gif-image-frame");
+                    let context = canvas.getContext('2d');
 
-                // Calculate image scaling
-                const horizontalRatio = canvas.width  / image.width;
-                const verticalRatio =  canvas.height / image.height;
-                const ratio = Math.min(horizontalRatio, verticalRatio);
+                    // Set canvas size
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
 
-                // Calculate x/y offset
-                const xShift = ( canvas.width - image.width * ratio ) / 2;
-                const yShift = ( canvas.height - image.height * ratio ) / 2;
+                    for(let i = minFrame; i < frameNumber; i++)
+                    {
+                        // Create the image
+                        let image = frameData[i - minFrame].getImage();
 
-                // Draw the image
-                context.clearRect(0,0, canvas.width, canvas.height);
-                context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
-            }).catch((error) => { console.log('Error in map rendering: ' + error)});
+                        // Calculate image scaling
+                        const horizontalRatio = canvas.width  / image.width;
+                        const verticalRatio =  canvas.height / image.height;
+                        const ratio = Math.min(horizontalRatio, verticalRatio);
+
+                        // Calculate x/y offset
+                        const xShift = ( canvas.width - image.width * ratio ) / 2;
+                        const yShift = ( canvas.height - image.height * ratio ) / 2;
+
+                        // Draw the image
+                        // context.clearRect(0,0, canvas.width, canvas.height);
+                        context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
+                    }
+                }).catch((error) => { console.log('Error in map rendering: ' + error)});
+        }
+        else
+        {
+            gifFrames({ url: 'https://media.giphy.com/media/8VSaCyIdcnbuE/giphy.gif', frames: `${frameNumber}`, outputType: 'canvas' })
+                .then(function (frameData) {
+
+
+                    // Create canvas object
+                    let canvas = document.getElementById("gif-image-frame");
+                    let context = canvas.getContext('2d');
+
+                    // Set canvas size
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+
+                    // Create the image
+                    let image = frameData[0].getImage();
+
+                    // Calculate image scaling
+                    const horizontalRatio = canvas.width  / image.width;
+                    const verticalRatio =  canvas.height / image.height;
+                    const ratio = Math.min(horizontalRatio, verticalRatio);
+
+                    // Calculate x/y offset
+                    const xShift = ( canvas.width - image.width * ratio ) / 2;
+                    const yShift = ( canvas.height - image.height * ratio ) / 2;
+
+                    // Draw the image
+                    // context.clearRect(0,0, canvas.width, canvas.height);
+                    context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
+                }).catch((error) => { console.log('Error in map rendering: ' + error)});
+        }
     }
 
     async displayData() {
@@ -73,7 +111,7 @@ class GifImageFrame extends React.Component {
             setTimeout(this.displayData, this.state.framePeriodMS);
         }
 
-        this.renderImage(this.state.currentFrame);
+        this.renderImage(this.state.currentFrame, this.state.minFrame);
     }
 
     componentDidMount() {
@@ -81,7 +119,7 @@ class GifImageFrame extends React.Component {
     }
 
     handleSliderInput(newValue) {
-        this.setState({running: false, currentFrame: newValue});
+        this.setState({running: false, currentFrame: newValue - 1});
 
         setTimeout(this.displayData, 1);
     }
@@ -119,12 +157,12 @@ class GifImageFrame extends React.Component {
                                     ref={this.sliderRef}
                                     id="gif-image-frame-slider"
                                     aria-label="GIF Frame"
-                                    value={this.state.currentFrame}
+                                    value={this.state.currentFrame + 1}
                                     valueLabelDisplay="auto"
                                     step={1}
                                     marks
-                                    min={this.state.minFrame}
-                                    max={this.state.maxFrame}
+                                    min={this.state.minFrame + 1}
+                                    max={this.state.maxFrame + 1}
                                     onChange={(e, val) => { this.handleSliderInput(val); }}
                                 />
                             </Stack>
