@@ -18,6 +18,7 @@
     color: #fffff0;
     text-decoration: none;
     display: block;
+    border-radius: 20px;
 }
 
 .footer-td {
@@ -27,6 +28,11 @@
     padding-bottom: 5vh;
     vertical-align: bottom;
     width: 20vw;
+}
+
+.footer-label:hover {
+    /*box-shadow: 20px 20px 20px 10px #676767;*/
+    background: #656565;
 }
 
 .footer-table {
