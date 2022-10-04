@@ -8,10 +8,10 @@ class Header extends React.Component {
                 <tbody>
                 <tr>
                     <td className={"header-td"}>
-                        <p></p>
+                        <h1>floviz</h1>
                     </td>
                     <td className={"header-td"}>
-                        <h1>The Water App</h1>
+                        <p></p>
                     </td>
                     <td className={"header-td"}>
                         <h4>Brought to you by HOWWO2H-HO20</h4>
