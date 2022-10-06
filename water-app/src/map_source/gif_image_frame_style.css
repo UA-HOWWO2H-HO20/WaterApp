@@ -1,6 +1,6 @@
 #gif-image-frame-container {
     text-align: center;
-    width: 80vw;
+    width: 60vw;
     display: block;
     margin: 3vh auto 5vh;
     vertical-align: top;
@@ -9,7 +9,7 @@
 #gif-image-frame {
     margin: 0;
     padding: 0;
-    width: 80vw;
+    width: 60vw;
     height: 50vh;
     vertical-align: top;
 }
