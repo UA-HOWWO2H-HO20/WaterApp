@@ -28,8 +28,6 @@ class MetadataSidebar extends React.Component {
                 sortable: false,
                 width: 200
             }];
-
-        this.ref = React.createRef();
         
         // Store the current row selection from the table
         this.selectedRows = [];

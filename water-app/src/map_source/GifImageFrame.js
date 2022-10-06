@@ -19,8 +19,6 @@ class GifImageFrame extends React.Component {
             currentFrame: 0
         };
 
-        this.ref = React.createRef();
-
         this.sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
         this.setState = this.setState.bind(this);
