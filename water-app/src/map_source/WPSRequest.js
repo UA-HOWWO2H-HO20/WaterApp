@@ -1,8 +1,42 @@
+import $ from 'jquery';
+
 /** Classes to build requests to GeoServer in the WMS format. WMS uses XML syntax with tags
  *  to specify request parameters. Building requests manually can be clunky at best, so the
  *  goal for this file is to make that process a little easier.
  *
  */
+class GSCapabilitiesRequest {
+    // Requests the capabilities of the server and returns them in array format
+    async getCapabilities(gsURL) {
+        let url = `https://${gsURL}/geoserver/STORE/ows?service=wfs&version=2.0.0&request=GetCapabilities`;
+        let layerList = [];
+
+        await $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "xml",
+            success: function(xml) {
+                $(xml).find('FeatureType').each(function(){
+                    let name = $(this).find("Name").text();
+                    let title = $(this).find("Title").text();
+                    let group = "NO_GROUP";
+                    $(this).find('ows\\:Keywords').each(function(){
+                        let keyword = $(this).find('ows\\:Keyword').text();
+                        if(keyword.indexOf("group:") !== -1)
+                        {
+                            group=keyword.split(":")[1];
+                            return false;
+                        }
+                    });
+                    layerList.push({"name":name,"title":title,"group":group});
+                });
+            }
+        });
+
+        return layerList;
+    }
+}
+
 class GSAnimationRequest {
     constructor() {
         // Fields to be set
