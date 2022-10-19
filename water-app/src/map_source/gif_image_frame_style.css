@@ -1,6 +1,7 @@
 #gif-image-frame-container {
     text-align: center;
     width: 60vw;
+    height: 80vh;
     display: block;
     margin: 3vh auto 5vh;
     vertical-align: top;

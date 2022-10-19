@@ -100,7 +100,7 @@ class MetadataSidebar extends React.Component {
 
         return (
             <Stack spacing={2}>
-                <Box sx={{ height: '60vh', width: '20vw' }}>
+                <Box sx={{ height: '75vh', width: '20vw' }}>
                     <DataGrid id="data-grid"
                         rows={rows}
                         columns={columns}
