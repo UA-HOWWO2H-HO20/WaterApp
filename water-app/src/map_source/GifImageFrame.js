@@ -26,8 +26,9 @@ class GifImageFrame extends React.Component {
         this.displayData = this.displayData.bind(this);
         this.handleSliderInput = this.handleSliderInput.bind(this);
         this.handlePlayButtonClick = this.handlePlayButtonClick.bind(this);
-
-        this.sliderRef = React.createRef();
+        this.handleDataSelectionEvent = this.handleDataSelectionEvent.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentWillUnmount = this.componentWillUnmount.bind(this);
     }
 
     renderImage(frameNumber, minFrame) {
@@ -115,7 +116,15 @@ class GifImageFrame extends React.Component {
     }
 
     componentDidMount() {
+        // Create listener for refresh events coming from the data selector
+        window.addEventListener('data-refresh', (event) => { this.handleDataSelectionEvent(event); });
+
         setTimeout(this.displayData, 1);
+    }
+
+    componentWillUnmount() {
+        // Remove event listener
+        window.removeEventListener('data-refresh', (event) => { this.handleDataSelectionEvent(event); });
     }
 
     handleSliderInput(newValue) {
@@ -129,6 +138,19 @@ class GifImageFrame extends React.Component {
         this.setState({running: !oldState});
 
         setTimeout(this.displayData, 1);
+    }
+
+    async handleDataSelectionEvent(event) {
+        // TODO: pull data from the server
+        console.log('Frame got request for rows:' + event.toString());
+
+
+        // Send a reply to the selector so that the button unlocks
+        // TODO: remove sleep for testing
+        await new Promise(r => setTimeout(r, 1000));
+
+        const response = new Event('data-loaded');
+        dispatchEvent(response);
     }
 
     render() {
@@ -154,7 +176,6 @@ class GifImageFrame extends React.Component {
                                     {pausePlayIcon}
                                 </SvgIcon>
                                 <Slider
-                                    ref={this.sliderRef}
                                     id="gif-image-frame-slider"
                                     aria-label="GIF Frame"
                                     value={this.state.currentFrame + 1}
