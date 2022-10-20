@@ -1,0 +1,18 @@
+<layer>
+  <name>NDVI_data</name>
+  <id>LayerInfoImpl--1462ece3:183f5b6453f:-7fc8</id>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--69e94f43:183f58863c3:-7ff9</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl--1462ece3:183f5b6453f:-7fc9</id>
+  </resource>
+  <opaque>false</opaque>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-10-20 14:41:37.237 UTC</dateCreated>
+  <dateModified>2022-10-20 15:02:08.299 UTC</dateModified>
+</layer>

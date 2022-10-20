@@ -1,0 +1,18 @@
+name: floviz
+
+services:
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.21.1
+    ports:
+      - 6789:8080
+    volumes:
+      - ./geoserver/geoserver_data:/opt/geoserver_data
+    environment:
+      INSTALL_EXTENSIONS: true
+      STABLE_EXTENSIONS: "wps,ysld,wps-download"
+
+volumes:
+  geoserver-volume:
+
+networks:
+  internal-network: {}

@@ -1,0 +1,18 @@
+http://localhost:8080/geoserver/wms/animate?LAYERS=floviz:snowLZWdataset&aparam=time&avalues=2009-10-01T00:00:00.000Z,2009-11-01T00:00:00.000Z,2009-12-01T00:00:00.000Z&format=image/gif;subtype=animated&format_options=gif_loop_continuosly:true
+
+http://localhost:8080/geoserver/floviz/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=true&STYLES=&LAYERS=floviz:snowLZWdataset&exceptions=application/vnd.ogc.se_inimage&SRS=EPSG:32632&WIDTH=460&HEIGHT=769&BBOX=624306.8080723116,5170673.636380356,633087.2260780369,5185333.116876872&time=2009-10-01T00:00:00.000Z
+
+http://localhost:8080/geoserver/floviz/wms/animate?LAYERS=floviz:snowLZWdataset&aparam=time&avalues=2009-10-01T00:00:00.000Z,2009-11-01T00:00:00.000Z,2009-12-01T00:00:00.000Z&format=image/gif;subtype=animated&format_options=gif_loop_continuosly:true
+
+ttp://localhost:8080/geoserver/floviz/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/jpeg&TRANSPARENT=true&STYLES=&LAYERS=floviz:snowLZWdataset&exceptions=application/vnd.ogc.se_inimage&SRS=EPSG:32632&WIDTH=460&HEIGHT=769&BBOX=624306.8080723116,5170673.636380356,633087.2260780369,5185333.116876872&time=2009-10-01T00:00:00.000Z
+
+http://localhost:8080/geoserver/wms?
+service=wms&
+version=1.1.1&
+request=GetCapabilities
+
+http://localhost:8080/geoserver/floviz/wms?service=WMS&version=1.1.0&request=GetMap&layers=floviz%3ANDVI_data&bbox=73.88418633062035%2C29.541098118270465%2C76.94519566125763%2C32.57515799038415&width=768&height=761&srs=EPSG%3A4326&styles=&format=application/openlayers&time=2021-12-19
+
+curl -X POST -F 'xml=@testpost2.xml' http://127.0.0.1:8080/geoserver/ows?service=wps > output2.mp4
+
+http://localhost:8080/geoserver/floviz/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&TRANSPARENT=true&STYLES&TIME=2021-12-19&LAYERS=floviz%3ANDVI_data&exceptions=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A4326&WIDTH=768&HEIGHT=761&BBOX=73.3062744140625%2C28.96820068359375%2C77.5250244140625%2C33.14849853515625

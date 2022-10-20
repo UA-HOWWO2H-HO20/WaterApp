@@ -1,0 +1,16 @@
+<layer>
+  <name>ua-logo</name>
+  <id>LayerInfoImpl-4742b9d2:183f57510e6:-7ffa</id>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl-4742b9d2:183f57510e6:-7ffb</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-10-20 13:01:36.80 UTC</dateCreated>
+</layer>
