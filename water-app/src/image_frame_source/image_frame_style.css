@@ -32,3 +32,11 @@
     width: 50vw;
     color: #38b6ff;
 }
+
+#metadata-grid {
+    word-wrap: break-word;
+}
+
+#metadata-grid-button {
+    width: 20vw;
+}

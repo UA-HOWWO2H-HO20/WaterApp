@@ -256,11 +256,11 @@ class ImageFrame extends React.Component {
         // Create button object
         if(this.state.inRefresh)
         {
-            overlaySelectorButton = <Button id="data-grid-button" variant="contained" disabled={true} startIcon={<AutorenewIcon />}>Fetching data...</Button>;
+            overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" disabled={true} startIcon={<AutorenewIcon />}>Fetching data...</Button>;
         }
         else
         {
-            overlaySelectorButton = <Button id="data-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick(); }}>Fetch Data</Button>;
+            overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick(); }}>Fetch Data</Button>;
         }
 
         return (
@@ -271,7 +271,7 @@ class ImageFrame extends React.Component {
                         <td className={"map-sidebar-td"}>
                             <Stack spacing={2}>
                                 <Box sx={{ height: '75vh', width: '20vw' }}>
-                                    <DataGrid id="data-grid"
+                                    <DataGrid id="metadata-grid"
                                               rows={metadataRows}
                                               columns={metadataColumns}
                                               pageSize={10}
