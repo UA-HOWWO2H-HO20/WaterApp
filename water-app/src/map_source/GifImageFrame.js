@@ -1,8 +1,8 @@
 import React from "react";
-import gifFrames from "gif-frames";
 import {Slider, Stack, SvgIcon} from "@mui/material";
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import ReactPlayer from 'react-player';
 
 import './gif_image_frame_style.css'
 
@@ -19,11 +19,13 @@ class GifImageFrame extends React.Component {
             currentFrame: 0
         };
 
+        this.source = 'output2.mp4';
+
         this.sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
         this.setState = this.setState.bind(this);
-        this.renderImage = this.renderImage.bind(this);
-        this.displayData = this.displayData.bind(this);
+        // this.renderImage = this.renderImage.bind(this);
+        // this.displayData = this.displayData.bind(this);
         this.handleSliderInput = this.handleSliderInput.bind(this);
         this.handlePlayButtonClick = this.handlePlayButtonClick.bind(this);
         this.handleDataSelectionEvent = this.handleDataSelectionEvent.bind(this);
@@ -31,95 +33,96 @@ class GifImageFrame extends React.Component {
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
     }
 
-    renderImage(frameNumber, minFrame) {
-        // Render the image
-        if(frameNumber > minFrame)
-        {
-            gifFrames({ url: 'https://media.giphy.com/media/8VSaCyIdcnbuE/giphy.gif', frames: `${minFrame}-${frameNumber}`, outputType: 'canvas' })
-                .then(function (frameData) {
+    // renderImage(frameNumber, minFrame) {
+    //     // Render the image
+    //     if(frameNumber > minFrame)
+    //     {
+    //         gifFrames({ url: this.source, frames: `${minFrame}-${frameNumber}`, outputType: 'canvas' })
+    //             .then(function (frameData) {
+    //
+    //
+    //                 // Create canvas object
+    //                 let canvas = document.getElementById("gif-image-frame");
+    //                 let context = canvas.getContext('2d');
+    //
+    //                 // Set canvas size
+    //                 canvas.width = window.innerWidth;
+    //                 canvas.height = window.innerHeight;
+    //
+    //                 for(let i = minFrame; i < frameNumber; i++)
+    //                 {
+    //                     // Create the image
+    //                     let image = frameData[i - minFrame].getImage();
+    //
+    //                     // Calculate image scaling
+    //                     const horizontalRatio = canvas.width  / image.width;
+    //                     const verticalRatio =  canvas.height / image.height;
+    //                     const ratio = Math.min(horizontalRatio, verticalRatio);
+    //
+    //                     // Calculate x/y offset
+    //                     const xShift = ( canvas.width - image.width * ratio ) / 2;
+    //                     const yShift = ( canvas.height - image.height * ratio ) / 2;
+    //
+    //                     // Draw the image
+    //                     // context.clearRect(0,0, canvas.width, canvas.height);
+    //                     context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
+    //                 }
+    //             }).catch((error) => { console.log('Error in map rendering: ' + error)});
+    //     }
+    //     else
+    //     {
+    //         gifFrames({ url: this.source, frames: `${frameNumber}`, outputType: 'canvas' })
+    //             .then(function (frameData) {
+    //
+    //
+    //                 // Create canvas object
+    //                 let canvas = document.getElementById("gif-image-frame");
+    //                 let context = canvas.getContext('2d');
+    //
+    //                 // Set canvas size
+    //                 canvas.width = window.innerWidth;
+    //                 canvas.height = window.innerHeight;
+    //
+    //                 // Create the image
+    //                 let image = frameData[0].getImage();
+    //
+    //                 // Calculate image scaling
+    //                 const horizontalRatio = canvas.width  / image.width;
+    //                 const verticalRatio =  canvas.height / image.height;
+    //                 const ratio = Math.min(horizontalRatio, verticalRatio);
+    //
+    //                 // Calculate x/y offset
+    //                 const xShift = ( canvas.width - image.width * ratio ) / 2;
+    //                 const yShift = ( canvas.height - image.height * ratio ) / 2;
+    //
+    //                 // Draw the image
+    //                 // context.clearRect(0,0, canvas.width, canvas.height);
+    //                 context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
+    //             }).catch((error) => { console.log('Error in map rendering: ' + error)});
+    //     }
+    // }
 
-
-                    // Create canvas object
-                    let canvas = document.getElementById("gif-image-frame");
-                    let context = canvas.getContext('2d');
-
-                    // Set canvas size
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-
-                    for(let i = minFrame; i < frameNumber; i++)
-                    {
-                        // Create the image
-                        let image = frameData[i - minFrame].getImage();
-
-                        // Calculate image scaling
-                        const horizontalRatio = canvas.width  / image.width;
-                        const verticalRatio =  canvas.height / image.height;
-                        const ratio = Math.min(horizontalRatio, verticalRatio);
-
-                        // Calculate x/y offset
-                        const xShift = ( canvas.width - image.width * ratio ) / 2;
-                        const yShift = ( canvas.height - image.height * ratio ) / 2;
-
-                        // Draw the image
-                        // context.clearRect(0,0, canvas.width, canvas.height);
-                        context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
-                    }
-                }).catch((error) => { console.log('Error in map rendering: ' + error)});
-        }
-        else
-        {
-            gifFrames({ url: 'https://media.giphy.com/media/8VSaCyIdcnbuE/giphy.gif', frames: `${frameNumber}`, outputType: 'canvas' })
-                .then(function (frameData) {
-
-
-                    // Create canvas object
-                    let canvas = document.getElementById("gif-image-frame");
-                    let context = canvas.getContext('2d');
-
-                    // Set canvas size
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-
-                    // Create the image
-                    let image = frameData[0].getImage();
-
-                    // Calculate image scaling
-                    const horizontalRatio = canvas.width  / image.width;
-                    const verticalRatio =  canvas.height / image.height;
-                    const ratio = Math.min(horizontalRatio, verticalRatio);
-
-                    // Calculate x/y offset
-                    const xShift = ( canvas.width - image.width * ratio ) / 2;
-                    const yShift = ( canvas.height - image.height * ratio ) / 2;
-
-                    // Draw the image
-                    // context.clearRect(0,0, canvas.width, canvas.height);
-                    context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
-                }).catch((error) => { console.log('Error in map rendering: ' + error)});
-        }
-    }
-
-    async displayData() {
-        if(this.state.running)
-        {
-            this.setState({currentFrame: this.state.currentFrame + 1});
-
-            if(this.state.currentFrame > this.state.maxFrame)
-                this.setState({currentFrame: this.state.minFrame});
-
-            // Call the function again
-            setTimeout(this.displayData, this.state.framePeriodMS);
-        }
-
-        this.renderImage(this.state.currentFrame, this.state.minFrame);
-    }
+    // async displayData() {
+    //     if(this.state.running)
+    //     {
+    //         this.setState({currentFrame: this.state.currentFrame + 1});
+    //
+    //         if(this.state.currentFrame > this.state.maxFrame)
+    //             this.setState({currentFrame: this.state.minFrame});
+    //
+    //         // Call the function again
+    //         setTimeout(this.displayData, this.state.framePeriodMS);
+    //     }
+    //
+    //     this.renderImage(this.state.currentFrame, this.state.minFrame);
+    // }
 
     componentDidMount() {
         // Create listener for refresh events coming from the data selector
         window.addEventListener('data-refresh', (event) => { this.handleDataSelectionEvent(event); });
 
-        setTimeout(this.displayData, 1);
+        // setTimeout(this.displayData, 1);
+        console.log(this.player.getDuration());
     }
 
     componentWillUnmount() {
@@ -166,7 +169,15 @@ class GifImageFrame extends React.Component {
                     <tbody>
                         <tr>
                             <td>
-                                <canvas id="gif-image-frame" />
+                                {/*<canvas id="gif-image-frame" />*/}
+                                <ReactPlayer
+                                    ref={p => {this.player = p}}
+                                    url={this.source}
+                                    className='react-player'
+                                    playing={true}
+                                    width='100%'
+                                    height='100%'
+                                />
                             </td>
                         </tr>
                     <tr>
