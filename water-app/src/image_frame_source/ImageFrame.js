@@ -1,7 +1,10 @@
 import React from "react";
-import {Slider, Stack, SvgIcon} from "@mui/material";
+import {Button, Slider, Stack, SvgIcon} from "@mui/material";
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { DataGrid } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 import ServerRequester from "./ServerRequester";
 
@@ -17,15 +20,39 @@ class ImageFrame extends React.Component {
             currentFrame: 0,
             framePeriodMS: 500,
             running: true,
-            imagesLoaded: false
+            imagesLoaded: false,
+            inOverlayRefresh: false,
+            imageMetadata: []
         };
 
+        // Store the current row selection from the table
+        this.selectedOverlayRows = [];
+
+        // Head cells for metadata
+        this.metadataHeadCells = [
+            {
+                field: 'overlay_name',
+                headerName: 'Overlay Name',
+                sortable: false,
+                width: 200
+            },
+            {
+                field: 'start_date',
+                headerName: 'Start Date',
+                sortable: false,
+                width: 200
+            },
+            {
+                field: 'end_date',
+                headerName: 'End Date',
+                sortable: false,
+                width: 200
+            }];
+
+        // Original image sources for initial animation
         this.imageSources = ["https://via.placeholder.com/960x720.jpeg?text=Image+1",
             "https://via.placeholder.com/960x720.jpeg?text=Image+2",
             "https://via.placeholder.com/960x720.jpeg?text=Image+3"];
-
-        //  Will store the metadata loaded by the requester
-        this.imageMetadata = [];
 
         // Create a server requester object
         this.requester = new ServerRequester();
@@ -42,11 +69,12 @@ class ImageFrame extends React.Component {
         this.displayData = this.displayData.bind(this);
         this.handleSliderInput = this.handleSliderInput.bind(this);
         this.handlePlayButtonClick = this.handlePlayButtonClick.bind(this);
-        this.handleDataSelectionEvent = this.handleDataSelectionEvent.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
         this.cacheImage = this.cacheImage.bind(this);
         this.loadImages = this.loadImages.bind(this);
+        this.handleOverlayButtonClick = this.handleOverlayButtonClick.bind(this);
+        this.handleOverlayRowSelect = this.handleOverlayRowSelect.bind(this);
     }
     
     // Helper to request the images from the backend server and update the state with their URLS
@@ -131,19 +159,12 @@ class ImageFrame extends React.Component {
     }
 
     componentDidMount() {
-        // Create listener for refresh events coming from the data selector
-        window.addEventListener('data-refresh', (event) => { this.handleDataSelectionEvent(event); });
-
         // Begin the initial metadata fetch
         this.requester.fetchMetaDataFromServer().then((result) => {
             console.log('Metadata fetch completed by requester.');
 
             // Save the metadata locally
-            this.imageMetadata = result;
-
-            // Create and publish event
-            const event = new CustomEvent('metadata-event', { detail: result });
-            dispatchEvent(event);
+            this.setState({imageMetadata: result});
         });
         
         // Start loading the initial images
@@ -154,9 +175,6 @@ class ImageFrame extends React.Component {
     }
 
     componentWillUnmount() {
-        // Remove event listener
-        window.removeEventListener('data-refresh', (event) => { this.handleDataSelectionEvent(event); });
-
         // Clear display interval
         clearInterval(this.displayInterval);
     }
@@ -170,21 +188,22 @@ class ImageFrame extends React.Component {
         this.setState({running: !oldState});
     }
 
-    async handleDataSelectionEvent(event) {
+    async handleOverlayButtonClick() {
+        this.setState({inRefresh: true});
+
         // TODO: pull data from the server
-        console.log('Frame got request for rows:' + event.detail.toString());
+        console.log('Frame got request for rows:' + this.selectedOverlayRows.toString());
 
         // Parse data
-        let requestedIDs = event.detail.toString().split(',');
-
+        let requestedIDs = this.selectedOverlayRows;
         let overlayNames = '';
 
         // TODO: figure out how to replace this later
         for(let i = 0; i < requestedIDs.length; i++) {
             const currentID = parseInt(requestedIDs.at(i));
 
-            for(let j = 0; j < this.imageMetadata.length; j++) {
-                const item = this.imageMetadata.at(j);
+            for(let j = 0; j < this.state.imageMetadata.length; j++) {
+                const item = this.state.imageMetadata.at(j);
 
                 if(item.id === currentID) {
                     overlayNames = overlayNames + `${item.overlay_name} - `
@@ -209,9 +228,12 @@ class ImageFrame extends React.Component {
         // Load the images and re-render
         this.loadImages();
 
-        // Publish to sidebar so it unlocks the selector
-        const response = new Event('data-loaded');
-        dispatchEvent(response);
+        // Unlock the selector
+        this.setState({inRefresh: false});
+    }
+
+    handleOverlayRowSelect(data) {
+        this.selectedOverlayRows = data;
     }
 
     render() {
@@ -225,33 +247,80 @@ class ImageFrame extends React.Component {
         // Create the canvas component. If the images are not loaded, show the placeholder
         let canvasComponent = this.state.imagesLoaded ? <canvas id="image-frame" /> : <img id="placeholder-image" alt="" src={this.dataNotLoadedBackground}/>;
 
+        // Fetch server data
+        const metadataRows = this.state.imageMetadata;
+        const metadataColumns = this.metadataHeadCells;
+
+        let overlaySelectorButton;
+
+        // Create button object
+        if(this.state.inRefresh)
+        {
+            overlaySelectorButton = <Button id="data-grid-button" variant="contained" disabled={true} startIcon={<AutorenewIcon />}>Fetching data...</Button>;
+        }
+        else
+        {
+            overlaySelectorButton = <Button id="data-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick(); }}>Fetch Data</Button>;
+        }
+
         return (
-            <div id="image-frame-container">
-                <table>
+            <div className={"map-container"}>
+                <table className={"map-table"}>
                     <tbody>
-                        <tr>
-                            <td>
-                                {canvasComponent}
-                            </td>
-                        </tr>
                     <tr>
-                        <td>
-                            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
-                                <SvgIcon id="image-play-button" color="primary" onClick={(event) => { this.handlePlayButtonClick(); }}>
-                                    {pausePlayIcon}
-                                </SvgIcon>
-                                <Slider
-                                    id="image-frame-slider"
-                                    aria-label="Image Index"
-                                    value={this.state.currentFrame + 1}
-                                    valueLabelDisplay="auto"
-                                    step={1}
-                                    marks
-                                    min={this.state.minFrame + 1}
-                                    max={this.state.maxFrame + 1}
-                                    onChange={(e, val) => { this.handleSliderInput(val); }}
-                                />
+                        <td className={"map-sidebar-td"}>
+                            <Stack spacing={2}>
+                                <Box sx={{ height: '75vh', width: '20vw' }}>
+                                    <DataGrid id="data-grid"
+                                              rows={metadataRows}
+                                              columns={metadataColumns}
+                                              pageSize={10}
+                                              hideFooterPagination
+                                              checkboxSelection
+                                              onSelectionModelChange={(data) => {
+                                                  this.handleOverlayRowSelect(data);
+                                              }}
+                                    />
+                                </Box>
+                                {overlaySelectorButton}
                             </Stack>
+                        </td>
+                        <td className={"map-td"}>
+                            <div id="image-frame-container">
+                                <table>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            {canvasComponent}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
+                                                <SvgIcon id="image-play-button" color="primary" onClick={(event) => { this.handlePlayButtonClick(); }}>
+                                                    {pausePlayIcon}
+                                                </SvgIcon>
+                                                <Slider
+                                                    id="image-frame-slider"
+                                                    aria-label="Image Index"
+                                                    value={this.state.currentFrame + 1}
+                                                    valueLabelDisplay="auto"
+                                                    step={1}
+                                                    marks
+                                                    min={this.state.minFrame + 1}
+                                                    max={this.state.maxFrame + 1}
+                                                    onChange={(e, val) => { this.handleSliderInput(val); }}
+                                                />
+                                            </Stack>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                        <td className={"map-sidebar-td"}>
+                            {/*Horizontal spacing to center map*/}
+                            <p></p>
                         </td>
                     </tr>
                     </tbody>
