@@ -1,4 +1,4 @@
-#gif-image-frame-container {
+#image-frame-container {
     text-align: center;
     width: 60vw;
     height: 80vh;
@@ -7,7 +7,7 @@
     vertical-align: top;
 }
 
-#gif-image-frame {
+#image-frame {
     margin: 0;
     padding: 0;
     width: 60vw;
@@ -15,12 +15,12 @@
     vertical-align: top;
 }
 
-#gif-image-play-button {
+#image-play-button {
     width: 2vw;
     height: 2vw;
 }
 
-#gif-image-frame-slider {
+#image-frame-slider {
     width: 50vw;
     color: #38b6ff;
 }
