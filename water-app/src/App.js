@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./header_source/Header";
 import Footer from "./footer_source/Footer";
 import ImageFrame from "./map_source/ImageFrame"
-import MetadataSidebar from "./metadata_sidebar_source/MetadataSidebar";
+import MetadataSidebar from "./sidebar_source/MetadataSidebar";
 
 import "./App.css";
 
