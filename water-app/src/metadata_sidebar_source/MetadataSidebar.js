@@ -33,10 +33,10 @@ class MetadataSidebar extends React.Component {
         this.selectedRows = [];
 
         // Store whether we are currently refreshing so button can display the logo
-        this.state = {inRefresh: false};
+        this.state = {inRefresh: false,
+                      rowData: []};
 
         this.setState = this.setState.bind(this);
-        this.getMetadata = this.getMetadata.bind(this);
         this.handleButtonClick = this.handleButtonClick.bind(this);
         this.handleRowSelect = this.handleRowSelect.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
@@ -45,29 +45,28 @@ class MetadataSidebar extends React.Component {
 
     componentDidMount() {
         // Add listener to unlock the button after data refresh
-        window.addEventListener('data-loaded', () => { this.setState({inRefresh: false}); });
+        window.addEventListener('data-loaded', async () => {
+            // Okay this isn't my proudest moment, but if the map sends a response too fast this will never update the state
+            // A tiny delay usually ensures the state update takes effect so the selector unlocks no matter how quick the response is
+            await new Promise(r => setTimeout(r, 10))
+
+            this.setState({inRefresh: false});
+        });
+
+        // Add listener for metadata published by the server requester
+        window.addEventListener('metadata-event', (event) => {
+            this.setState({rowData: event.detail});
+            console.log('Sidebar received metadata from server');
+        });
     }
 
     componentWillUnmount() {
-        // Remove event listener
-        window.removeEventListener('data-loaded', () => { this.setState({inRefresh: false}); });
-    }
-
-    getMetadata() {
-        // TODO: load from server using requests
-        return [
-            {
-                id: 1,
-                overlay_name: 'Population Density by State',
-                start_date: new Date().toString(),
-                end_date: new Date().toString()
-            },
-            {
-                id: 2,
-                overlay_name: 'Radar Data',
-                start_date: new Date().toString(),
-                end_date: new Date().toString()
-        }];
+        // Remove event listeners
+        // window.removeEventListener('data-loaded', () => { this.setState({inRefresh: false}); });
+        // window.removeEventListener('metadata-event', (event) => {
+        //     this.setState({rowData: event.detail});
+        //     console.log('Sidebar received metadata from server');
+        // });
     }
 
     handleButtonClick() {
@@ -83,7 +82,7 @@ class MetadataSidebar extends React.Component {
 
     render() {
         // Fetch server data
-        const rows = this.getMetadata();
+        const rows = this.state.rowData;
         const columns = this.headCells;
 
         let button;
