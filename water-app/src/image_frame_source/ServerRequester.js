@@ -36,7 +36,7 @@ class ServerRequester
     // with the id number assigned to a row, and the purpose of this function is to return URLs of images
     // associated with those ids.
     // TODO: how do we organize this
-    getImageURLsFromSelection(ids, imageMetadata, intervalMS) {
+    getImageURLsFromSelection(ids, imageMetadata, intervalMS, startDate, endDate) {
         let overlayNames = '';
         let newURLs = [];
 

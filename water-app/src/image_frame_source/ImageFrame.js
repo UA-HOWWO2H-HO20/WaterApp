@@ -204,16 +204,39 @@ class ImageFrame extends React.Component {
         // Start the call to lock the button from being pressed
         this.setState({inRefresh: true});
 
-        // TODO: pull data from the server
         console.log('Frame got request for rows:' + this.state.selectedOverlayRows.toString());
 
-        // Parse data
-        let requestedIDs = this.state.selectedOverlayRows;
+        // Create the interval
+        // TODO: months are different lengths so we need to change this later on
+        const timeStepMultipliers = [1000, 60, 60, 24, 7, 30, 12];
+        const timeStepPeriod = this.state.timeStepPeriod;
+        let totalMS = 1;
+        for(let i = 0; i <= timeStepPeriod; i++)
+        {
+            totalMS = totalMS * timeStepMultipliers[i];
+        }
+        totalMS = totalMS * this.state.timeStepValue;
 
+        // Load the new image sources
+        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows,
+            this.state.imageMetadata,
+            totalMS,
+            this.state.startDateValue,
+            this.state.endDateValue);
+
+        // Load the images and re-render
+        this.loadImages();
+
+        // Unlock the selector
+        this.setState({inRefresh: false});
+    }
+
+    handleOverlayRowSelect(data) {
         // Load the start and end dates so that the selector will be populated
         let maxStartTime = new Date(0);
         let minEndTime = new Date();
-        requestedIDs.forEach((index) => {
+
+        data.forEach((index) => {
             let item;
 
             for(let j = 0; j < this.state.imageMetadata.length; j++) {
@@ -231,25 +254,11 @@ class ImageFrame extends React.Component {
                 minEndTime = new Date(item.end_date);
         });
 
-        // console.log(`Maximum start time: ${maxStartTime.toString()}`);
-        // console.log(`Minimum end time: ${minEndTime.toString()}`);
-
         this.setState({ selectionStartDate: maxStartTime,
-                              selectionEndDate: minEndTime,
-                              startDateValue: maxStartTime,
-                              endDateValue: minEndTime });
+            selectionEndDate: minEndTime,
+            startDateValue: maxStartTime,
+            endDateValue: minEndTime });
 
-        // Load the new image sources
-        this.imageSources = this.requester.getImageURLsFromSelection(requestedIDs, this.state.imageMetadata, this.state.timeStepPeriod);
-
-        // Load the images and re-render
-        this.loadImages();
-
-        // Unlock the selector
-        this.setState({inRefresh: false});
-    }
-
-    handleOverlayRowSelect(data) {
         this.setState({selectedOverlayRows: data, maxFrame: this.imageSources.length - 1});
     }
 
@@ -402,7 +411,7 @@ class ImageFrame extends React.Component {
                                         10
                                     </Button>
                                 </Stack>
-                                <Stack direction="row" spacing={2} alignItems="stretch" justifyContent="stretch">
+                                <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="stretch">
                                     <TextField className="time-step-selector-box"
                                                label={"Time step"}
                                                type="number"
@@ -412,7 +421,7 @@ class ImageFrame extends React.Component {
                                                    this.setState({timeStepValue: event.target.value});
                                                }}
                                     />
-                                    <FormControl>
+                                    <FormControl style={{minWidth: 120}}>
                                         <InputLabel id="demo-simple-select-label">Interval</InputLabel>
                                         <Select
                                             labelId="demo-simple-select-label"
