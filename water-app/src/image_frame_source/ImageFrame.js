@@ -295,21 +295,18 @@ class ImageFrame extends React.Component {
                     <tbody>
                     <tr>
                         <td className={"map-sidebar-td"}>
-                            <Stack spacing={2}>
-                                <Box sx={{ height: '75vh', width: '20vw' }}>
-                                    <DataGrid id="metadata-grid"
-                                              rows={metadataRows}
-                                              columns={metadataColumns}
-                                              pageSize={10}
-                                              hideFooterPagination
-                                              checkboxSelection
-                                              onSelectionModelChange={(data) => {
-                                                  this.handleOverlayRowSelect(data);
-                                              }}
-                                    />
-                                </Box>
-                                {overlaySelectorButton}
-                            </Stack>
+                            <Box sx={{ height: '75vh', width: '20vw' }}>
+                                <DataGrid id="metadata-grid"
+                                          rows={metadataRows}
+                                          columns={metadataColumns}
+                                          pageSize={10}
+                                          hideFooterPagination
+                                          checkboxSelection
+                                          onSelectionModelChange={(data) => {
+                                              this.handleOverlayRowSelect(data);
+                                          }}
+                                />
+                            </Box>
                         </td>
                         <td className={"map-td"}>
                             <div id="image-frame-container">
@@ -345,7 +342,7 @@ class ImageFrame extends React.Component {
                             </div>
                         </td>
                         <td className={"map-sidebar-td"}>
-                            <Stack sx={{ height: '75vh', width: '20vw' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
+                            <Stack sx={{ height: '72vh', width: '20vw' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DateTimePicker
                                         label={"Start"}
@@ -442,6 +439,7 @@ class ImageFrame extends React.Component {
                                         </Select>
                                     </FormControl>
                                 </Stack>
+                                {overlaySelectorButton}
                             </Stack>
                         </td>
                     </tr>
