@@ -24,7 +24,7 @@ class ImageFrame extends React.Component {
 
         this.state = {
             minFrame: 0,
-            maxFrame: 1,
+            maxFrame: 2,
             currentFrame: 0,
             running: true,
             imagesLoaded: false,
