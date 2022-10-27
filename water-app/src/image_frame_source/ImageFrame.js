@@ -207,8 +207,8 @@ class ImageFrame extends React.Component {
         console.log('Frame got request for rows:' + this.state.selectedOverlayRows.toString());
 
         // Create the interval
-        // TODO: months are different lengths so we need to change this later on
-        const timeStepMultipliers = [1000, 60, 60, 24, 7, 30, 12];
+        // TODO: months are different lengths, so we need to change this later on
+        const timeStepMultipliers = [1000, 60, 60, 24, 7, 4, 12];
         const timeStepPeriod = this.state.timeStepPeriod;
         let totalMS = 1;
         for(let i = 0; i <= timeStepPeriod; i++)
@@ -228,7 +228,7 @@ class ImageFrame extends React.Component {
         this.loadImages();
 
         // Unlock the selector
-        this.setState({inRefresh: false});
+        this.setState({inRefresh: false, maxFrame: this.imageSources.length - 1});
     }
 
     handleOverlayRowSelect(data) {
@@ -259,7 +259,7 @@ class ImageFrame extends React.Component {
             startDateValue: maxStartTime,
             endDateValue: minEndTime });
 
-        this.setState({selectedOverlayRows: data, maxFrame: this.imageSources.length - 1});
+        this.setState({selectedOverlayRows: data});
     }
 
     render() {

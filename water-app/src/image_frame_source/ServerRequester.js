@@ -37,6 +37,12 @@ class ServerRequester
     // associated with those ids.
     // TODO: how do we organize this
     getImageURLsFromSelection(ids, imageMetadata, intervalMS, startDate, endDate) {
+        // Calculate number of frames
+        const differenceMS = new Date(endDate).getTime() - new Date(startDate).getTime();
+        const frameCount = Math.floor(differenceMS / intervalMS);
+
+        console.log(`Creating ${frameCount} frames based on interval and dates`);
+
         let overlayNames = '';
         let newURLs = [];
 
@@ -55,7 +61,7 @@ class ServerRequester
         if(overlayNames.length > 0)
             overlayNames.slice(0, -3);
 
-        for(let i = 0; i < 3; i++)
+        for(let i = 0; i < frameCount; i++)
         {
             const newURL = `https://via.placeholder.com/960x720.jpeg?text=${overlayNames.replace(' ', '+')} ${i + 1}`;
             newURLs.push(newURL);
