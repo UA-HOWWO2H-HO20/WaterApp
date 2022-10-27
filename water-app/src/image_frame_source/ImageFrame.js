@@ -9,6 +9,10 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 import ServerRequester from "./ServerRequester";
 
@@ -26,17 +30,15 @@ class ImageFrame extends React.Component {
             imagesLoaded: false,
             inOverlayRefresh: false,
             imageMetadata: [],
-            startDateMinimum: new Date(),
-            startDateMaximum: new Date(),
+            selectionStartDate: new Date(),
+            selectionEndDate: new Date(),
             startDateValue: new Date(),
             endDateValue: new Date(),
-            endDateMinimum: new Date(),
-            endDateMaximum: new Date(),
-            playbackFPS: 2
+            playbackFPS: 2,
+            selectedOverlayRows: [],
+            timeStepValue: 1,
+            timeStepPeriod: 2
         };
-
-        // Store the current row selection from the table
-        this.selectedOverlayRows = [];
 
         // Head cells for metadata
         this.metadataHeadCells = [
@@ -199,41 +201,46 @@ class ImageFrame extends React.Component {
     }
 
     async handleOverlayButtonClick() {
+        // Start the call to lock the button from being pressed
         this.setState({inRefresh: true});
 
         // TODO: pull data from the server
-        console.log('Frame got request for rows:' + this.selectedOverlayRows.toString());
+        console.log('Frame got request for rows:' + this.state.selectedOverlayRows.toString());
 
         // Parse data
-        let requestedIDs = this.selectedOverlayRows;
-        let overlayNames = '';
+        let requestedIDs = this.state.selectedOverlayRows;
 
-        // TODO: figure out how to replace this later
-        for(let i = 0; i < requestedIDs.length; i++) {
-            const currentID = parseInt(requestedIDs.at(i));
+        // Load the start and end dates so that the selector will be populated
+        let maxStartTime = new Date(0);
+        let minEndTime = new Date();
+        requestedIDs.forEach((index) => {
+            let item;
 
             for(let j = 0; j < this.state.imageMetadata.length; j++) {
-                const item = this.state.imageMetadata.at(j);
+                const candidate = this.state.imageMetadata.at(j);
 
-                if(item.id === currentID) {
-                    overlayNames = overlayNames + `${item.overlay_name} - `
-                    console.log(`User selected: ${item.overlay_name}`)
+                if(candidate.id === index) {
+                    item = candidate;
+                    break;
                 }
             }
-        }
 
-        if(overlayNames.length > 0)
-            overlayNames.slice(0, -3);
+            if(new Date(item.start_date) > maxStartTime)
+                maxStartTime = new Date(item.start_date);
+            if(new Date(item.end_date) < minEndTime)
+                minEndTime = new Date(item.end_date);
+        });
 
-        let newURLs = [];
-        for(let i = 0; i < 3; i++)
-        {
-            const newURL = `https://via.placeholder.com/960x720.jpeg?text=${overlayNames.replace(' ', '+')} ${i + 1}`;
-            newURLs.push(newURL);
-        }
+        // console.log(`Maximum start time: ${maxStartTime.toString()}`);
+        // console.log(`Minimum end time: ${minEndTime.toString()}`);
 
-        // Save the new image sources
-        this.imageSources = newURLs;
+        this.setState({ selectionStartDate: maxStartTime,
+                              selectionEndDate: minEndTime,
+                              startDateValue: maxStartTime,
+                              endDateValue: minEndTime });
+
+        // Load the new image sources
+        this.imageSources = this.requester.getImageURLsFromSelection(requestedIDs, this.state.imageMetadata, this.state.timeStepPeriod);
 
         // Load the images and re-render
         this.loadImages();
@@ -243,7 +250,7 @@ class ImageFrame extends React.Component {
     }
 
     handleOverlayRowSelect(data) {
-        this.selectedOverlayRows = data;
+        this.setState({selectedOverlayRows: data, maxFrame: this.imageSources.length - 1});
     }
 
     render() {
@@ -336,7 +343,6 @@ class ImageFrame extends React.Component {
                                         renderInput={(params) => <TextField {...params} />}
                                         value={this.state.startDateValue}
                                         onChange={(value) => {
-                                            console.log(`Start value: ${value}`)
                                             this.setState({startDateValue: value});
                                         }}
                                     />
@@ -345,7 +351,6 @@ class ImageFrame extends React.Component {
                                         renderInput={(params) => <TextField {...params} />}
                                         value={this.state.endDateValue}
                                         onChange={(value) => {
-                                            console.log(`End value: ${value}`)
                                             this.setState({endDateValue: value});
                                         }}
                                     />
@@ -354,7 +359,7 @@ class ImageFrame extends React.Component {
                                     <Button className={"fps-selector-button"}
                                             variant="standard"
                                             color="primary"
-                                            disabled={false}>
+                                            disabled={true}>
                                         Playback FPS
                                     </Button>
                                     <Button className={"fps-selector-button"}
@@ -396,6 +401,37 @@ class ImageFrame extends React.Component {
                                             }}>
                                         10
                                     </Button>
+                                </Stack>
+                                <Stack direction="row" spacing={2} alignItems="stretch" justifyContent="stretch">
+                                    <TextField className="time-step-selector-box"
+                                               label={"Time step"}
+                                               type="number"
+                                               value={this.state.timeStepValue}
+                                               InputProps={{ inputProps: { min: 0, max: 10 } }}
+                                               onChange={(event) => {
+                                                   this.setState({timeStepValue: event.target.value});
+                                               }}
+                                    />
+                                    <FormControl>
+                                        <InputLabel id="demo-simple-select-label">Interval</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            value={this.state.timeStepPeriod}
+                                            label="Select"
+                                            onChange={(event) => {
+                                                this.setState({timeStepPeriod: event.target.value});
+                                            }}
+                                        >
+                                            <MenuItem value={0}>Seconds</MenuItem>
+                                            <MenuItem value={1}>Minutes</MenuItem>
+                                            <MenuItem value={2}>Hours</MenuItem>
+                                            <MenuItem value={3}>Days</MenuItem>
+                                            <MenuItem value={4}>Weeks</MenuItem>
+                                            <MenuItem value={5}>Months</MenuItem>
+                                            <MenuItem value={6}>Years</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </Stack>
                             </Stack>
                         </td>
