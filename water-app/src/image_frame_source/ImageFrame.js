@@ -4,7 +4,11 @@ import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { DataGrid } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import ServerRequester from "./ServerRequester";
 
@@ -18,11 +22,17 @@ class ImageFrame extends React.Component {
             minFrame: 0,
             maxFrame: 1,
             currentFrame: 0,
-            framePeriodMS: 500,
             running: true,
             imagesLoaded: false,
             inOverlayRefresh: false,
-            imageMetadata: []
+            imageMetadata: [],
+            startDateMinimum: new Date(),
+            startDateMaximum: new Date(),
+            startDateValue: new Date(),
+            endDateValue: new Date(),
+            endDateMinimum: new Date(),
+            endDateMaximum: new Date(),
+            playbackFPS: 2
         };
 
         // Store the current row selection from the table
@@ -62,7 +72,7 @@ class ImageFrame extends React.Component {
         // This could be replaced with some other image later on if needed.
         this.dataNotLoadedBackground = "https://via.placeholder.com/960x720.jpeg?text=Fetching data from server...";
 
-        this.sleep = (ms) => new Promise(r => setTimeout(r, ms));
+        // this.sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
         this.setState = this.setState.bind(this);
         this.renderImage = this.renderImage.bind(this);
@@ -171,7 +181,7 @@ class ImageFrame extends React.Component {
         this.loadImages();
 
         // Start an interval to display the data
-        this.displayInterval = setInterval(this.displayData, this.state.framePeriodMS);
+        this.displayInterval = setInterval(this.displayData, (1000 / this.state.playbackFPS));
     }
 
     componentWillUnmount() {
@@ -260,7 +270,7 @@ class ImageFrame extends React.Component {
         }
         else
         {
-            overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick(); }}>Fetch Data</Button>;
+            overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick().then(); }}>Fetch Data</Button>;
         }
 
         return (
@@ -297,7 +307,7 @@ class ImageFrame extends React.Component {
                                     <tr>
                                         <td>
                                             <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
-                                                <SvgIcon id="image-play-button" color="primary" onClick={(event) => { this.handlePlayButtonClick(); }}>
+                                                <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
                                                     {pausePlayIcon}
                                                 </SvgIcon>
                                                 <Slider
@@ -319,8 +329,75 @@ class ImageFrame extends React.Component {
                             </div>
                         </td>
                         <td className={"map-sidebar-td"}>
-                            {/*Horizontal spacing to center map*/}
-                            <p></p>
+                            <Stack sx={{ height: '75vh', width: '20vw' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DateTimePicker
+                                        label={"Start"}
+                                        renderInput={(params) => <TextField {...params} />}
+                                        value={this.state.startDateValue}
+                                        onChange={(value) => {
+                                            console.log(`Start value: ${value}`)
+                                            this.setState({startDateValue: value});
+                                        }}
+                                    />
+                                    <DateTimePicker
+                                        label={"End"}
+                                        renderInput={(params) => <TextField {...params} />}
+                                        value={this.state.endDateValue}
+                                        onChange={(value) => {
+                                            console.log(`End value: ${value}`)
+                                            this.setState({endDateValue: value});
+                                        }}
+                                    />
+                                </LocalizationProvider>
+                                <Stack direction="row" spacing={2} alignItems="stretch" justifyContent="stretch">
+                                    <Button className={"fps-selector-button"}
+                                            variant="standard"
+                                            color="primary"
+                                            disabled={false}>
+                                        Playback FPS
+                                    </Button>
+                                    <Button className={"fps-selector-button"}
+                                            variant={this.state.playbackFPS === 2 ? "contained" : "outlined"}
+                                            color="primary"
+                                            onClick={() => {
+                                                // Reset the display interval
+                                                clearInterval(this.displayInterval);
+                                                this.displayInterval = setInterval(this.displayData, (1000 / 2));
+
+                                                // Update the state
+                                                this.setState({playbackFPS: 2});
+                                            }}>
+                                        2
+                                    </Button>
+                                    <Button className={"fps-selector-button"}
+                                            variant={this.state.playbackFPS === 5 ? "contained" : "outlined"}
+                                            color="primary"
+                                            onClick={() => {
+                                                // Reset the display interval
+                                                clearInterval(this.displayInterval);
+                                                this.displayInterval = setInterval(this.displayData, (1000 / 5));
+
+                                                // Update the state
+                                                this.setState({playbackFPS: 5});
+                                            }}>
+                                        5
+                                    </Button>
+                                    <Button className={"fps-selector-button"}
+                                            variant={this.state.playbackFPS === 10 ? "contained" : "outlined"}
+                                            color="primary"
+                                            onClick={() => {
+                                                // Reset the display interval
+                                                clearInterval(this.displayInterval);
+                                                this.displayInterval = setInterval(this.displayData, (1000 / 10));
+
+                                                // Update the state
+                                                this.setState({playbackFPS: 10});
+                                            }}>
+                                        10
+                                    </Button>
+                                </Stack>
+                            </Stack>
                         </td>
                     </tr>
                     </tbody>
