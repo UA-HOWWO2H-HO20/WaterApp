@@ -104,11 +104,11 @@ class ImageFrame extends React.Component {
     // Helper to cache images in the browser, which speeds up loading time
     cacheImage(path) {
         return new Promise((resolve, reject) => {
-            const img = new Image()
-            img.onload = () => resolve(path)
-            img.onerror = () => reject()
+            const img = new Image();
+            img.onload = () => resolve(path);
+            img.onerror = () => reject();
 
-            img.src = path
+            img.src = path;
         });
     }
 

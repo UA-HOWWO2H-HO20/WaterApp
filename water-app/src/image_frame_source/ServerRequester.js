@@ -3,6 +3,9 @@
 class ServerRequester
 {
     constructor() {
+        // Limit to the number of frames a user can request so that users don't create ridiculously sized requests
+        this.maxImageCount = 250;
+
         // Bindings
         this.fetchMetaDataFromServer = this.fetchMetaDataFromServer.bind(this);
         this.getImageURLsFromSelection = this.getImageURLsFromSelection.bind(this);
@@ -39,7 +42,14 @@ class ServerRequester
     getImageURLsFromSelection(ids, imageMetadata, intervalMS, startDate, endDate) {
         // Calculate number of frames
         const differenceMS = new Date(endDate).getTime() - new Date(startDate).getTime();
-        const frameCount = Math.floor(differenceMS / intervalMS);
+        let frameCount = Math.floor(differenceMS / intervalMS);
+
+        // Limit the number of frames returned
+        if(frameCount > this.maxImageCount)
+        {
+            console.log(`User requested ${frameCount} images, which is too many. Downsizing result to ${this.maxImageCount}`);
+            frameCount = this.maxImageCount;
+        }
 
         console.log(`Creating ${frameCount} frames based on interval and dates`);
 
