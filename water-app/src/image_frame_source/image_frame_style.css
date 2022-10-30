@@ -1,7 +1,7 @@
 #image-frame-container {
     text-align: center;
     width: 60vw;
-    height: 80vh;
+    height: 90vh;
     display: block;
     margin: 3vh auto 5vh;
     vertical-align: top;
@@ -11,7 +11,7 @@
     margin: 0;
     padding: 0;
     width: 60vw;
-    height: 50vh;
+    height: 70vh;
     vertical-align: top;
 }
 
@@ -19,7 +19,7 @@
     margin: 0;
     padding: 0;
     width: 60vw;
-    height: 50vh;
+    height: 90vh;
     vertical-align: top;
 }
 

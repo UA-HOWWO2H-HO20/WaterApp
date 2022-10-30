@@ -29,7 +29,10 @@ class Footer extends React.Component {
                                 <p className={"footer-label"} onClick={() => { this.alertSetStateReference({open: true, headerText: this.sourcesHeader, errorText: this.sourcesText }) } }>Sources</p>
                             </td>
                             <td className={"footer-td"}>
-                                <a className={"footer-label"} href={"https://github.com/andyhansen7/WaterApp"} >View source code</a>
+                                <a className={"footer-label"} href={"https://github.com/UA-HOWWO2H-HO20/WaterApp"} >View source code</a>
+                            </td>
+                            <td className={"footer-td"}>
+                                <a className={"footer-label"} href={"mailto:flovizapp@gmail.com"} >Email us</a>
                             </td>
                         </tr>
                     </tbody>

@@ -295,7 +295,7 @@ class ImageFrame extends React.Component {
                     <tbody>
                     <tr>
                         <td className={"map-sidebar-td"}>
-                            <Box sx={{ height: '75vh', width: '20vw' }}>
+                            <Box sx={{ height: '90vh', width: '20vw' }}>
                                 <DataGrid id="metadata-grid"
                                           rows={metadataRows}
                                           columns={metadataColumns}
@@ -342,7 +342,7 @@ class ImageFrame extends React.Component {
                             </div>
                         </td>
                         <td className={"map-sidebar-td"}>
-                            <Stack sx={{ height: '72vh', width: '20vw' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
+                            <Stack sx={{ height: '87vh', width: '20vw' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DateTimePicker
                                         label={"Start"}

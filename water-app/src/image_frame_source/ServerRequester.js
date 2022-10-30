@@ -62,7 +62,7 @@ class ServerRequester
     fetchMetaDataFromServer() {
         return new Promise(async (resolve) => {
             // TODO cross origin CORS error
-            // let requestURL = `http://floviz.undo.it:6789/geoserver/floviz/wms?VERSION=1.1.1&REQUEST=GetCapabilities&SERVICE=WMS&`;
+            let requestURL = `http://floviz.undo.it:6789/geoserver/floviz/wms?VERSION=1.1.1&REQUEST=GetCapabilities&SERVICE=WMS&`;
             let layerObjects = [];
 
             $.get(requestURL, function(data) {
@@ -118,6 +118,9 @@ class ServerRequester
                 }];
 
             resolve(simulatedData);
+
+            // TODO: uncomment once parsing works
+            // resolve(layerObjects);
         });
     }
 
