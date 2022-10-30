@@ -38,35 +38,67 @@ class ServerRequester
         this.getImageURLsFromSelection = this.getImageURLsFromSelection.bind(this);
     }
 
+    // Helper to clean up URI creation
+    static getURIWithParams(hostname, imageFormat, layers, srs, width, height, bbox, time) {
+        let uri = "";
+        uri = uri + `${encodeURIComponent(hostname)}?SERVICE=WMS`;
+        uri = uri + `&VERSION=1.1.1`;
+        uri = uri + `&REQUEST=GetMap`;
+        uri = uri + `&FORMAT=${encodeURIComponent(imageFormat)}`;
+        uri = uri + `&TRANSPARENT=true`;
+        uri = uri + `&STYLES`;
+        uri = uri + `&LAYERS=${encodeURIComponent(layers)}`;
+        uri = uri + `&exceptions=application%2Fvnd.ogc.se_inimage`;
+        uri = uri + `&SRS=${srs}`;
+        uri = uri + `&WIDTH=${encodeURIComponent(width)}`;
+        uri = uri + `&HEIGHT=${encodeURIComponent(height)}`;
+        uri = uri + `&BBOX=${encodeURIComponent(bbox)}`;
+        uri = uri + `&time=${encodeURIComponent(new Date(time).toISOString())}`;
+
+        return uri;
+    }
+
     // Function that makes a request to the server for the metadata, and returns the data as a list of objects
     fetchMetaDataFromServer() {
         return new Promise(async (resolve) => {
             // TODO cross origin CORS error
             // let requestURL = `http://floviz.undo.it:6789/geoserver/floviz/wms?VERSION=1.1.1&REQUEST=GetCapabilities&SERVICE=WMS&`;
-            // $.get(requestURL, function(data) {
-            //    console.log(data.toString());
-            //
-            //    // Parse data
-            //    const xmlDoc = this.parser.parseFromString(data,"text/xml");
-            //
-            //    // Parse out layers
-            //    const layers = xmlDoc.getElementsByTagName('Layer');
-            //    console.log('Layers: ' + layers.toString());
-            //
-            //    for(const layer of layers) {
-            //        const name = layer.getElementsByTagName('Name')[0];
-            //        const title = layer.getElementsByTagName('Title')[0];
-            //        const srs = layer.getElementsByTagName('SRS')[0];
-            //        const bbox = layer.getElementsByTagName('LatLonBoundingBox')[0];
-            //        const times = layer.getElementsByTagName('Extent')[0];
-            //
-            //        console.log(`Event name: ${name}`);
-            //        console.log(`Title: ${title}`);
-            //        console.log(`SRS: ${srs}`);
-            //        console.log(`BBox: ${bbox}`);
-            //        console.log(`Times: ${times}`);
-            //    }
-            // });
+            let layerObjects = [];
+
+            $.get(requestURL, function(data) {
+               console.log(data.toString());
+
+               // Parse data
+               const xmlDoc = this.parser.parseFromString(data,"text/xml");
+
+               // Parse out layers
+               const layers = xmlDoc.getElementsByTagName('Layer');
+               console.log('Layers: ' + layers.toString());
+
+               for(const layer of layers) {
+                   const name = layer.getElementsByTagName('Name')[0];
+                   const title = layer.getElementsByTagName('Title')[0];
+                   const srs = layer.getElementsByTagName('SRS')[0];
+                   const bbox = layer.getElementsByTagName('LatLonBoundingBox')[0];
+                   const times = layer.getElementsByTagName('Extent')[0];
+
+                   const newLayerObject = {};
+                   newLayerObject.name = name;
+                   newLayerObject.title = title;
+                   newLayerObject.srs = srs;
+                   newLayerObject.bbox = bbox;
+                   newLayerObject.times = times;
+
+                   console.log('');
+                   console.log(`Layer name: ${name}`);
+                   console.log(`Title: ${title}`);
+                   console.log(`SRS: ${srs}`);
+                   console.log(`BBox: ${bbox}`);
+                   console.log(`Times: ${times}`);
+
+                   layerObjects.push(newLayerObject);
+               }
+            });
 
             // Simulate delay in server response
             await new Promise(resolve => { setTimeout(resolve, 1000)});
@@ -121,16 +153,16 @@ class ServerRequester
         // }
 
         const validDates = [[8, 29], [9, 14], [9, 30]];
-        const layer = 'floviz:NDVI_data';
+        const layers = 'floviz:NDVI_data';
         const bbox = '73.3062744140625,28.96820068359375,77.5250244140625,33.14849853515625';
         const srs = 'EPSG%3A4326';
 
         for(let i = 0; i < validDates.length; i++) {
             let pair = validDates[i];
             let time = `2021-${pair[0]}-${pair[1]}T00:00:00.000Z`;
-            const testURL = `${this.hostName}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=${encodeURIComponent(this.imageFormat)}&TRANSPARENT=true&STYLES&LAYERS=${encodeURIComponent(layer)}&exceptions=application%2Fvnd.ogc.se_inimage&SRS=${srs}&WIDTH=${this.imageWidth}&HEIGHT=${this.imageHeight}&BBOX=${encodeURIComponent(bbox)}&time=${time}`;
+            const uri = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, layers, srs, this.imageWidth, this.imageHeight, bbox, time);
 
-            createdURLs.push(testURL);
+            createdURLs.push(uri);
         }
 
         return createdURLs;
