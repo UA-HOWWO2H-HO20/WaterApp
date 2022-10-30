@@ -12,9 +12,13 @@ class App extends React.Component {
 
         // Coordinates for tuscaloosa
         this.state = {
+            //longitude
             lng: -86.9,
+            //lattitude
             lat: 32.3,
+            //zoom
             zoom: 7,
+            //make dynami
             displayMarkerDot: false
         }
 
