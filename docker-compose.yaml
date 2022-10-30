@@ -10,6 +10,19 @@ services:
     environment:
       INSTALL_EXTENSIONS: true
       STABLE_EXTENSIONS: "wps,ysld,wps-download"
+      
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
+      - ./frontend-old/docs/:/var/www/:ro
+      - /etc/letsencrypt/:/etc/nginx/ssl/:ro 
+    networks:
+      - internal-network
 
 volumes:
   geoserver-volume:

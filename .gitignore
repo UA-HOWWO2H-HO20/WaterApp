@@ -1,3 +1,4 @@
 .env
+certbot/
 # geoserver/geoserver_data/*
 # !geoserver/geoserver_data/data/
