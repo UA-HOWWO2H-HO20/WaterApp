@@ -1,5 +1,6 @@
 import "./header_style.css"
 import React from "react";
+import AWILogo from "./awi.png";
 
 class Header extends React.Component {
     render() {
@@ -14,7 +15,7 @@ class Header extends React.Component {
                         <p></p>
                     </td>
                     <td className={"header-td"}>
-                        <h4>Brought to you by HOWWO2H-HO20</h4>
+                        <img src={AWILogo} alt={""} className={"header-thumbnail"} />
                     </td>
                 </tr>
                 </tbody>
