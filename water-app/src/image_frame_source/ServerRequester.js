@@ -30,9 +30,6 @@ class ServerRequester
         // Image format
         this.imageFormat = 'image/jpeg';
 
-        // XML parser for metadata
-        this.parser = new DOMParser();
-
         // Bindings
         this.fetchMetaDataFromServer = this.fetchMetaDataFromServer.bind(this);
         this.getImageURLsFromSelection = this.getImageURLsFromSelection.bind(this);
@@ -58,69 +55,115 @@ class ServerRequester
         return uri;
     }
 
+    static getListFromHTMLCollection(collection) {
+        let arr = [];
+        for(const item of collection) {
+            arr.push(item.innerHTML);
+        }
+
+        return arr;
+    }
+
+    static getFirstFromHTMLCollection(collection) {
+        const arr = ServerRequester.getListFromHTMLCollection(collection);
+
+        try {
+            return arr[0];
+        } catch(err) {
+            console.log(err);
+            return {};
+        }
+    }
+
     // Function that makes a request to the server for the metadata, and returns the data as a list of objects
     fetchMetaDataFromServer() {
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve, reject) => {
             // TODO cross origin CORS error
-            let requestURL = `http://floviz.undo.it:6789/geoserver/floviz/wms?VERSION=1.1.1&REQUEST=GetCapabilities&SERVICE=WMS&`;
+            let requestURL = `http://floviz.undo.it/geoserver/floviz/wms?VERSION=1.1.1&REQUEST=GetCapabilities&SERVICE=WMS&`;
             let layerObjects = [];
 
-            $.get(requestURL, function(data) {
-               console.log(data.toString());
+            try {
+                await $.get(requestURL, function(data, status) {
+                    // Parse data
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data,"text/xml");
 
-               // Parse data
-               const xmlDoc = this.parser.parseFromString(data,"text/xml");
+                    // Parse out layers
+                    const layers = xmlDoc.getElementsByTagName('Layer');
+                    // console.log(`Layers: ${ServerRequester.getListFromHTMLCollection(layers).join(', ')}`);
 
-               // Parse out layers
-               const layers = xmlDoc.getElementsByTagName('Layer');
-               console.log('Layers: ' + layers.toString());
+                    for(const layer of layers) {
+                        const name = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('Name'));
+                        const title = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('Title'));
+                        const srs = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('SRS'));
+                        const bbox1 = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('LatLonBoundingBox'));
+                        const bbox2 = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('BoundingBox'));
+                        const times = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('Extent'));
 
-               for(const layer of layers) {
-                   const name = layer.getElementsByTagName('Name')[0];
-                   const title = layer.getElementsByTagName('Title')[0];
-                   const srs = layer.getElementsByTagName('SRS')[0];
-                   const bbox = layer.getElementsByTagName('LatLonBoundingBox')[0];
-                   const times = layer.getElementsByTagName('Extent')[0];
+                        // Skip the one layer with all the data wrapped together
+                        if(title.toString().indexOf('GeoServer') !== -1)
+                            continue;
 
-                   const newLayerObject = {};
-                   newLayerObject.name = name;
-                   newLayerObject.title = title;
-                   newLayerObject.srs = srs;
-                   newLayerObject.bbox = bbox;
-                   newLayerObject.times = times;
+                        const newLayerObject = {};
+                        newLayerObject.overlay_name = name;
+                        newLayerObject.title = title;
+                        newLayerObject.srs = srs;
+                        newLayerObject.times = times;
 
-                   console.log('');
-                   console.log(`Layer name: ${name}`);
-                   console.log(`Title: ${title}`);
-                   console.log(`SRS: ${srs}`);
-                   console.log(`BBox: ${bbox}`);
-                   console.log(`Times: ${times}`);
+                        // Check for bounding box
+                        if(bbox1.length < 1 && bbox2.length < 1) {
+                            console.log(`No bounding box found for layer ${title}`);
+                            // continue;
+                        } else if(bbox1.length > 0 && bbox2.length === 0) {
+                            newLayerObject.bbox = bbox1;
+                        } else if(bbox1.length === 0 && bbox2.length > 0) {
+                            newLayerObject.bbox = bbox2;
+                        } else {
+                            newLayerObject.bbox = bbox1;
+                        }
 
-                   layerObjects.push(newLayerObject);
-               }
-            });
+                        // Create a unique ID for the object
+                        newLayerObject.id = layerObjects.length;
+
+                        // Parse out start and end times
+                        if(times !== undefined && times.toString().length > 0) {
+                            const parsedTimes = times.toString().split(',');
+                            newLayerObject.start_date = new Date(parsedTimes[0]).toString();
+                            newLayerObject.end_date = new Date(parsedTimes[parsedTimes.length - 1]).toString();
+
+                            console.log(newLayerObject.start_date);
+                            console.log(newLayerObject.end_date);
+                        }
+
+                        layerObjects.push(newLayerObject);
+                    }
+
+                    resolve(layerObjects);
+                });
+            } catch(err) {
+                console.log(`Error in metadata fetch: ${JSON.stringify(err)}`);
+                resolve([]);
+            }
+
 
             // Simulate delay in server response
-            await new Promise(resolve => { setTimeout(resolve, 1000)});
+            // await new Promise(resolve => { setTimeout(resolve, 1000)});
+            //
+            // let simulatedData = [
+            //     {
+            //         id: 1,
+            //         overlay_name: 'Population Density by State',
+            //         start_date: new Date(Date.parse('01 Jan 2000 00:00:00 GMT')).toString(),
+            //         end_date: new Date(Date.parse('01 Jan 2005 00:00:00 GMT')).toString()
+            //     },
+            //     {
+            //         id: 2,
+            //         overlay_name: 'Radar Data',
+            //         start_date: new Date('01 Jan 2001 00:00:00 GMT').toString(),
+            //         end_date: new Date('01 Jan 2004 00:00:00 GMT').toString()
+            //     }];
 
-            let simulatedData = [
-                {
-                    id: 1,
-                    overlay_name: 'Population Density by State',
-                    start_date: new Date(Date.parse('01 Jan 2000 00:00:00 GMT')).toString(),
-                    end_date: new Date(Date.parse('01 Jan 2005 00:00:00 GMT')).toString()
-                },
-                {
-                    id: 2,
-                    overlay_name: 'Radar Data',
-                    start_date: new Date('01 Jan 2001 00:00:00 GMT').toString(),
-                    end_date: new Date('01 Jan 2004 00:00:00 GMT').toString()
-                }];
-
-            resolve(simulatedData);
-
-            // TODO: uncomment once parsing works
-            // resolve(layerObjects);
+            // resolve(simulatedData);
         });
     }
 
