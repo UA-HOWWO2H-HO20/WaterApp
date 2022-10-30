@@ -16,8 +16,11 @@ The app has moved to a more educational and research oriented application that w
 ### Website
 
 -**Map view:** Users should be presented with a map containing various data about water (Google Maps, OSM, GeoApify, Leaflet)
+
 -**Data slicing:** Users should be able to pick and choose which data they want presented
+
 -**Historical View:** Users should be able to view historical data for the location of their choice, displayed in a user-friendly format 
+
 -**Calculations:** Users should be able to perform analysis of the presented data to gather things like max water level, min water level, mean water level, etc…
 
 ### Backend Services
