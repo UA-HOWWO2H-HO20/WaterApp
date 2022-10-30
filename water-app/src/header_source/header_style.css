@@ -12,15 +12,12 @@ h1 {
     font-size: 5vh;
     padding-top: 2vh;
     padding-bottom: 1vh;
-    text-align: center;
+    padding-left: 3vw;
+    text-align: left;
     font-weight: bold;
     margin: auto;
     color: #fffff0;
-    text-shadow: 5px 5px 5px #aaaaaa;
-}
-
-h1:hover {
-    text-shadow: 5px 5px 5px #999999;
+    text-shadow: 3px 3px 5px #444444;
 }
 
 h4 {
