@@ -16,7 +16,7 @@ class ServerRequester
 {
     constructor() {
         // Server IP
-        this.hostName = "http://floviz.undo.it:6789/geoserver/floviz/wms";
+        this.hostName = "http://floviz.undo.it/geoserver/floviz/wms";
 
         // Limit to the number of frames a user can request so that users don"t create ridiculously sized requests
         this.maxImageCount = 250;
@@ -34,15 +34,15 @@ class ServerRequester
     }
 
     // Helper to clean up URI creation
-    static getURIWithParams(hostname, imageFormat, layers, srs, width, height, bbox, time) {
+    static getURIWithParams(hostname, imageFormat, layer, srs, width, height, bbox, time) {
         let uri = "";
-        uri = uri + `${encodeURIComponent(hostname)}?SERVICE=WMS`;
+        uri = uri + `${hostname}?SERVICE=WMS`;
         uri = uri + `&VERSION=1.1.1`;
         uri = uri + `&REQUEST=GetMap`;
         uri = uri + `&FORMAT=${encodeURIComponent(imageFormat)}`;
         uri = uri + `&TRANSPARENT=true`;
         uri = uri + `&STYLES`;
-        uri = uri + `&LAYERS=${encodeURIComponent(layers)}`;
+        uri = uri + `&LAYERS=${encodeURIComponent(layer)}`;
         uri = uri + `&exceptions=application%2Fvnd.ogc.se_inimage`;
         uri = uri + `&SRS=${srs}`;
         uri = uri + `&WIDTH=${encodeURIComponent(width)}`;
@@ -153,10 +153,10 @@ class ServerRequester
                             newLayerObject.bbox_ymin = boundingBoxProperties.miny;
                             newLayerObject.bbox_ymax = boundingBoxProperties.maxy;
                         } else {
-                            newLayerObject.bbox_xmin = 0.0;
-                            newLayerObject.bbox_xmax = 0.0;
-                            newLayerObject.bbox_ymin = 0.0;
-                            newLayerObject.bbox_ymax = 0.0;
+                            newLayerObject.bbox_xmin = 'N/A';
+                            newLayerObject.bbox_xmax = 'N/A';
+                            newLayerObject.bbox_ymin = 'N/A';
+                            newLayerObject.bbox_ymax = 'N/A';
                         }
 
                         // Create a unique ID for the object
@@ -189,45 +189,70 @@ class ServerRequester
     // with the id number assigned to a row, and the purpose of this function is to return URLs of images
     // associated with those ids.
     getImageURLsFromSelection(ids, imageMetadata, intervalMS, startDate, endDate) {
-        // TODO implement this once everything else works
-        // // Calculate number of frames
-        // const differenceMS = new Date(endDate).getTime() - new Date(startDate).getTime();
-        // let frameCount = Math.floor(differenceMS / intervalMS);
-        //
-        // // Limit the number of frames returned
-        // if(frameCount > this.maxImageCount) {
-        //     console.log(`User requested ${frameCount} images, which is too many. Downsizing result to ${this.maxImageCount}`);
-        //     frameCount = this.maxImageCount;
-        // }
-        //
-        // let frameDateTimes = [];
-        //
-        // // Build dates of frames
-        // for(let i = 0; i < frameCount; i++) {
-        //     let intervalTime = (i * intervalMS) + new Date(startDate);
-        //     frameDateTimes.push(intervalTime);
-        // }
-        //
-        // // Build list of URLs
-        let createdURLs = [];
-        //
-        // for(let i = 0; i < frameCount; i++) {
-        //     const URL = `${this.hostName}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=${this.imageFormat}&TRANSPARENT=true&STYLES&LAYERS=${this.layer}&exceptions=application%2Fvnd.ogc.se_inimage&SRS=${this.srs}&WIDTH=${this.imageWidth}&HEIGHT=${this.imageHeight}&BBOX=${this.bbox}&time=${frameDateTimes[i]}`;
-        //     createdURLs.push(URL);
-        // }
+        // Calculate number of frames
+        const differenceMS = new Date(endDate).getTime() - new Date(startDate).getTime();
+        let frameCount = Math.floor(differenceMS / intervalMS);
 
-        const validDates = [[8, 29], [9, 14], [9, 30]];
-        const layers = "floviz:NDVI_data";
-        const bbox = "73.3062744140625,28.96820068359375,77.5250244140625,33.14849853515625";
-        const srs = "EPSG%3A4326";
-
-        for(let i = 0; i < validDates.length; i++) {
-            let pair = validDates[i];
-            let time = `2021-${pair[0]}-${pair[1]}T00:00:00.000Z`;
-            const uri = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, layers, srs, this.imageWidth, this.imageHeight, bbox, time);
-
-            createdURLs.push(uri);
+        // Limit the number of frames returned
+        if(frameCount > this.maxImageCount) {
+            console.log(`User requested ${frameCount} images, which is too many. Downsizing result to ${this.maxImageCount}`);
+            frameCount = this.maxImageCount;
+        } else {
+            console.log(`Processing request for ${frameCount} frames`);
         }
+
+        // Build dates of frames
+        let frameDateTimes = [];
+        for(let i = 0; i < frameCount; i++) {
+            let intervalTime = new Date((i * intervalMS) + new Date(startDate).getTime());
+            frameDateTimes.push(intervalTime);
+        }
+
+        // Build the minimal bounding box shared between the selected layers
+        let xMin, xMax, yMin, yMax;
+        let layerNames = [], srsSpecs = [];
+        for(let i = 0; i < ids.length; i++) {
+            let id = ids[i];
+
+            for(let j = 0; j < imageMetadata.length; j++) {
+                let layer = imageMetadata[j];
+
+                if(layer.id === id) {
+                    // Save the layer name
+                    layerNames.push(layer.overlay_name);
+
+                    // Save the SRS spec
+                    srsSpecs.push(layer.srs);
+
+                    // Update the bounds
+                    if(i === 0) {
+                        xMin = layer.bbox_xmin;
+                        xMax = layer.bbox_xmax;
+                        yMin = layer.bbox_ymin;
+                        yMax = layer.bbox_ymax;
+                    } else {
+                        xMin = Math.max(xMin, layer.bbox_xmin);
+                        xMax = Math.min(xMax, layer.bbox_xmax);
+                        yMin = Math.max(yMin, layer.bbox_ymin);
+                        yMax = Math.min(yMax, layer.bbox_ymax);
+                    }
+                }
+            }
+        }
+
+        // Build list of URLs
+        let createdURLs = [];
+        for(let i = 0; i < layerNames.length; i++) {
+            for(let j = 0; j < frameCount; j++) {
+                const bbox = `${xMin},${yMin},${xMax},${yMax}`;
+                const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, layerNames[i], layerNames[i], this.imageWidth, this.imageHeight, bbox, frameDateTimes[j]);
+                createdURLs.push(URL);
+            }
+
+            // TODO: combine the frames here
+        }
+
+        console.log(createdURLs.join('\n'));
 
         return createdURLs;
     }

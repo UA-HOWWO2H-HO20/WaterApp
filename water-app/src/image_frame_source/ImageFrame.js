@@ -43,8 +43,8 @@ class ImageFrame extends React.Component {
         // Head cells for metadata
         this.metadataHeadCells = [
             {
-                field: 'overlay_name',
-                headerName: 'Overlay Name',
+                field: 'title',
+                headerName: 'Layer Name',
                 sortable: false,
                 width: 160
             },
@@ -98,8 +98,6 @@ class ImageFrame extends React.Component {
         // This could be replaced with some other image later on if needed.
         this.dataNotLoadedBackground = "https://via.placeholder.com/960x720.jpeg?text=Fetching data from server...";
 
-        // this.sleep = (ms) => new Promise(r => setTimeout(r, ms));
-
         this.setState = this.setState.bind(this);
         this.renderImage = this.renderImage.bind(this);
         this.displayData = this.displayData.bind(this);
@@ -120,8 +118,8 @@ class ImageFrame extends React.Component {
         ).then(() => {
             this.setState({ imagesLoaded: true });
             console.log(`Loaded image sources: ${this.imageSources}`);
-        }, () => { 
-            console.error('Failed to load images'); 
+        }, () => {
+            console.error('Failed to load images');
         });           
     }
 
@@ -164,7 +162,6 @@ class ImageFrame extends React.Component {
         context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
 
         // Probably not needed, but making this async helps with the displayData function
-        // TODO: evaluate this
         return new Promise((r) => {r()});
     }
 
@@ -242,11 +239,7 @@ class ImageFrame extends React.Component {
         totalMS = totalMS * this.state.timeStepValue;
 
         // Load the new image sources
-        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows,
-            this.state.imageMetadata,
-            totalMS,
-            this.state.startDateValue,
-            this.state.endDateValue);
+        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, totalMS, this.state.startDateValue, this.state.endDateValue);
 
         // Load the images and re-render
         this.loadImages();
