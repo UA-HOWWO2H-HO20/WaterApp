@@ -1,7 +1,6 @@
 import $ from "jquery";
 
 // TODO for server:
-// - Enable Cross-Origin whatever for metadata (CORS missing allow-origin)
 // - Enable the most recent date return for requests
 // - Set data resolution to 1 minute
 // - Add actual data sources
@@ -13,14 +12,13 @@ import $ from "jquery";
 // - Parse and save metadata
 // - Pass better params to loader
 
-// TODO: this class is for testing and needs to be completed later on
 class ServerRequester
 {
     constructor() {
         // Server IP
-        this.hostName = 'http://floviz.undo.it:6789/geoserver/floviz/wms';
+        this.hostName = "http://floviz.undo.it:6789/geoserver/floviz/wms";
 
-        // Limit to the number of frames a user can request so that users don't create ridiculously sized requests
+        // Limit to the number of frames a user can request so that users don"t create ridiculously sized requests
         this.maxImageCount = 250;
 
         // Image size
@@ -28,7 +26,7 @@ class ServerRequester
         this.imageHeight = 761;
 
         // Image format
-        this.imageFormat = 'image/jpeg';
+        this.imageFormat = "image/jpeg";
 
         // Bindings
         this.fetchMetaDataFromServer = this.fetchMetaDataFromServer.bind(this);
@@ -55,7 +53,7 @@ class ServerRequester
         return uri;
     }
 
-    static getListFromHTMLCollection(collection) {
+    static getInnerHTMLListFromHTMLCollection(collection) {
         let arr = [];
         for(const item of collection) {
             arr.push(item.innerHTML);
@@ -65,12 +63,41 @@ class ServerRequester
     }
 
     static getFirstFromHTMLCollection(collection) {
-        const arr = ServerRequester.getListFromHTMLCollection(collection);
+        const arr = ServerRequester.getInnerHTMLListFromHTMLCollection(collection);
 
         try {
             return arr[0];
         } catch(err) {
-            console.log(err);
+            console.error(`Error in getFirstFromHTMLCollection: ${err}`);
+            return {};
+        }
+    }
+
+    static getAttributesFromHTMLCollection(collection) {
+        let arr = [];
+        for(const item of collection) {
+            arr.push(item.attributes);
+        }
+
+        return arr;
+    }
+
+    // Returns an object with minx, maxx, miny, maxy fields that correspond to an attribute set for an object
+    static getBoundingBoxFromHTMLCollection(collection) {
+        const arr = ServerRequester.getAttributesFromHTMLCollection(collection);
+
+        try {
+            const attributes = arr[0];
+
+            let bounds = {};
+            bounds.minx = attributes.getNamedItem("minx").value;
+            bounds.miny = attributes.getNamedItem("miny").value;
+            bounds.maxx = attributes.getNamedItem("maxx").value;
+            bounds.maxy = attributes.getNamedItem("maxy").value;
+
+            return bounds;
+        } catch(err) {
+            console.error(`Error in getBoundingBoxFromHTMLCollection: ${err}`);
             return {};
         }
     }
@@ -78,48 +105,58 @@ class ServerRequester
     // Function that makes a request to the server for the metadata, and returns the data as a list of objects
     fetchMetaDataFromServer() {
         return new Promise(async (resolve, reject) => {
-            // TODO cross origin CORS error
             let requestURL = `http://floviz.undo.it/geoserver/floviz/wms?VERSION=1.1.1&REQUEST=GetCapabilities&SERVICE=WMS&`;
             let layerObjects = [];
 
             try {
                 await $.get(requestURL, function(data, status) {
-                    // Parse data
+                    // Parse XML elements
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(data,"text/xml");
 
                     // Parse out layers
-                    const layers = xmlDoc.getElementsByTagName('Layer');
-                    // console.log(`Layers: ${ServerRequester.getListFromHTMLCollection(layers).join(', ')}`);
-
+                    const layers = xmlDoc.getElementsByTagName("Layer");
                     for(const layer of layers) {
-                        const name = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('Name'));
-                        const title = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('Title'));
-                        const srs = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('SRS'));
-                        const bbox1 = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('LatLonBoundingBox'));
-                        const bbox2 = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('BoundingBox'));
-                        const times = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName('Extent'));
+                        const name = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName("Name"));
+                        let title = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName("Title"));
+                        const srs = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName("SRS"));
+                        const times = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName("Extent"));
+
+                        // If the title doesn"t exist, use the layer name
+                        if(title.length === 0)
+                            title = name;
 
                         // Skip the one layer with all the data wrapped together
-                        if(title.toString().indexOf('GeoServer') !== -1)
+                        if(title.toString().indexOf("GeoServer") !== -1)
                             continue;
 
+                        // Create the new object
                         const newLayerObject = {};
                         newLayerObject.overlay_name = name;
                         newLayerObject.title = title;
                         newLayerObject.srs = srs;
-                        newLayerObject.times = times;
+                        newLayerObject.raw_times = times;
 
-                        // Check for bounding box
-                        if(bbox1.length < 1 && bbox2.length < 1) {
-                            console.log(`No bounding box found for layer ${title}`);
-                            // continue;
-                        } else if(bbox1.length > 0 && bbox2.length === 0) {
-                            newLayerObject.bbox = bbox1;
-                        } else if(bbox1.length === 0 && bbox2.length > 0) {
-                            newLayerObject.bbox = bbox2;
+                        // Load the bounding box. Bounding box can be stored in one of two fields. as properties instead of text.
+                        // The purpose of this is to parse out the correct one to use in case one or the other doesn't exist
+                        const latLonBoundingBoxProperties = ServerRequester.getBoundingBoxFromHTMLCollection(layer.getElementsByTagName("LatLonBoundingBox"));
+                        const boundingBoxProperties = ServerRequester.getBoundingBoxFromHTMLCollection(layer.getElementsByTagName("BoundingBox"));
+
+                        if(JSON.stringify(latLonBoundingBoxProperties).length > 0) {
+                            newLayerObject.bbox_xmin = latLonBoundingBoxProperties.minx;
+                            newLayerObject.bbox_xmax = latLonBoundingBoxProperties.maxx;
+                            newLayerObject.bbox_ymin = latLonBoundingBoxProperties.miny;
+                            newLayerObject.bbox_ymax = latLonBoundingBoxProperties.maxy;
+                        } else if(JSON.stringify(boundingBoxProperties).length > 0) {
+                            newLayerObject.bbox_xmin = boundingBoxProperties.minx;
+                            newLayerObject.bbox_xmax = boundingBoxProperties.maxx;
+                            newLayerObject.bbox_ymin = boundingBoxProperties.miny;
+                            newLayerObject.bbox_ymax = boundingBoxProperties.maxy;
                         } else {
-                            newLayerObject.bbox = bbox1;
+                            newLayerObject.bbox_xmin = 0.0;
+                            newLayerObject.bbox_xmax = 0.0;
+                            newLayerObject.bbox_ymin = 0.0;
+                            newLayerObject.bbox_ymax = 0.0;
                         }
 
                         // Create a unique ID for the object
@@ -127,12 +164,13 @@ class ServerRequester
 
                         // Parse out start and end times
                         if(times !== undefined && times.toString().length > 0) {
-                            const parsedTimes = times.toString().split(',');
+                            const parsedTimes = times.toString().split(",");
                             newLayerObject.start_date = new Date(parsedTimes[0]).toString();
                             newLayerObject.end_date = new Date(parsedTimes[parsedTimes.length - 1]).toString();
-
-                            console.log(newLayerObject.start_date);
-                            console.log(newLayerObject.end_date);
+                        } else {
+                            // newLayerObject.start_date = "N/A";
+                            // newLayerObject.end_date = "N/A";
+                            continue;
                         }
 
                         layerObjects.push(newLayerObject);
@@ -144,26 +182,6 @@ class ServerRequester
                 console.log(`Error in metadata fetch: ${JSON.stringify(err)}`);
                 resolve([]);
             }
-
-
-            // Simulate delay in server response
-            // await new Promise(resolve => { setTimeout(resolve, 1000)});
-            //
-            // let simulatedData = [
-            //     {
-            //         id: 1,
-            //         overlay_name: 'Population Density by State',
-            //         start_date: new Date(Date.parse('01 Jan 2000 00:00:00 GMT')).toString(),
-            //         end_date: new Date(Date.parse('01 Jan 2005 00:00:00 GMT')).toString()
-            //     },
-            //     {
-            //         id: 2,
-            //         overlay_name: 'Radar Data',
-            //         start_date: new Date('01 Jan 2001 00:00:00 GMT').toString(),
-            //         end_date: new Date('01 Jan 2004 00:00:00 GMT').toString()
-            //     }];
-
-            // resolve(simulatedData);
         });
     }
 
@@ -199,9 +217,9 @@ class ServerRequester
         // }
 
         const validDates = [[8, 29], [9, 14], [9, 30]];
-        const layers = 'floviz:NDVI_data';
-        const bbox = '73.3062744140625,28.96820068359375,77.5250244140625,33.14849853515625';
-        const srs = 'EPSG%3A4326';
+        const layers = "floviz:NDVI_data";
+        const bbox = "73.3062744140625,28.96820068359375,77.5250244140625,33.14849853515625";
+        const srs = "EPSG%3A4326";
 
         for(let i = 0; i < validDates.length; i++) {
             let pair = validDates[i];

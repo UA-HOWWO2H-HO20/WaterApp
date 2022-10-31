@@ -46,19 +46,43 @@ class ImageFrame extends React.Component {
                 field: 'overlay_name',
                 headerName: 'Overlay Name',
                 sortable: false,
-                width: 200
+                width: 160
             },
             {
                 field: 'start_date',
                 headerName: 'Start Date',
                 sortable: false,
-                width: 200
+                width: 250
             },
             {
                 field: 'end_date',
                 headerName: 'End Date',
                 sortable: false,
-                width: 200
+                width: 250
+            },
+            {
+                field: 'bbox_xmin',
+                headerName: 'XMin',
+                sortable: false,
+                width: 80
+            },
+            {
+                field: 'bbox_xmax',
+                headerName: 'XMax',
+                sortable: false,
+                width: 80
+            },
+            {
+                field: 'bbox_ymin',
+                headerName: 'YMin',
+                sortable: false,
+                width: 80
+            },
+            {
+                field: 'bbox_ymax',
+                headerName: 'YMax',
+                sortable: false,
+                width: 80
             }];
 
         // Original image sources for initial animation
@@ -429,7 +453,6 @@ class ImageFrame extends React.Component {
                                                 this.setState({timeStepPeriod: event.target.value});
                                             }}
                                         >
-                                            <MenuItem value={0}>Seconds</MenuItem>
                                             <MenuItem value={1}>Minutes</MenuItem>
                                             <MenuItem value={2}>Hours</MenuItem>
                                             <MenuItem value={3}>Days</MenuItem>
