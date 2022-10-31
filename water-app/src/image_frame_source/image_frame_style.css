@@ -40,3 +40,8 @@
 #metadata-grid-button {
     width: 20vw;
 }
+
+.user-controls-spacing-div {
+    width: 100%;
+    height: 3vh;
+}

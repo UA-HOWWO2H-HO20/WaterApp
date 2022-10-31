@@ -181,24 +181,29 @@ class ServerRequester
     // Function that returns URLS to images based on an ID query. The MetaDataSidebar will post events
     // with the id number assigned to a row, and the purpose of this function is to return URLs of images
     // associated with those ids.
-    getImageURLsFromSelection(ids, imageMetadata, intervalMS, startDate, endDate) {
-        // Calculate number of frames
-        const differenceMS = new Date(endDate).getTime() - new Date(startDate).getTime();
-        let frameCount = Math.floor(differenceMS / intervalMS);
-
-        // Limit the number of frames returned
-        if(frameCount > this.maxImageCount) {
-            console.log(`User requested ${frameCount} images, which is too many. Downsizing result to ${this.maxImageCount}`);
-            frameCount = this.maxImageCount;
-        } else {
-            console.log(`Processing request for ${frameCount} frames`);
-        }
-
-        // Build dates of frames
+    getImageURLsFromSelection(ids, imageMetadata, intervalMS, startDate, endDate, useAllDates) {
+        // If using all frames, load them
+        // Otherwise, we will load them as we parse the layers
         let frameDateTimes = [];
-        for(let i = 0; i < frameCount; i++) {
-            let intervalTime = new Date((i * intervalMS) + new Date(startDate).getTime());
-            frameDateTimes.push(intervalTime);
+
+        if(!useAllDates) {
+            // Calculate number of frames
+            const differenceMS = new Date(endDate).getTime() - new Date(startDate).getTime();
+            let frameCount = Math.floor(differenceMS / intervalMS);
+
+            // Limit the number of frames returned
+            if(frameCount > this.maxImageCount) {
+                console.log(`User requested ${frameCount} images, which is too many. Downsizing result to ${this.maxImageCount}`);
+                frameCount = this.maxImageCount;
+            } else {
+                console.log(`Processing request for ${frameCount} frames`);
+            }
+
+            // Build dates of frames
+            for(let i = 0; i < frameCount; i++) {
+                let intervalTime = new Date((i * intervalMS) + new Date(startDate).getTime());
+                frameDateTimes.push(intervalTime);
+            }
         }
 
         // Build the minimal bounding box shared between the selected layers
@@ -217,11 +222,13 @@ class ServerRequester
                     // Save the SRS spec
                     srsSpecs.push(layer.srs);
 
-                    // TODO: this just uses the raw layer times. remove later
-                    // let rawTimes = layer.raw_times.split(',');
-                    // rawTimes.forEach((t) => {
-                    //     frameDateTimes.push(new Date(t).toISOString());
-                    // });
+                    // If we are using all available times, load that from the layer
+                    if(useAllDates) {
+                        let rawTimes = layer.raw_times.split(',');
+                        rawTimes.forEach((t) => {
+                            frameDateTimes.push(new Date(t).toISOString());
+                        });
+                    }
 
                     // Update the bounds
                     if(i === 0) {
@@ -254,7 +261,7 @@ class ServerRequester
             const layerName = layerNames[i];
             const layerSRS = srsSpecs[i];
 
-            for(let j = 0; j < frameCount; j++) {
+            for(let j = 0; j < frameDateTimes.length; j++) {
                 // Encode the bounding box
                 const bbox = encodeURIComponent(`${xMin},${yMin},${xMax},${yMax}`);
 

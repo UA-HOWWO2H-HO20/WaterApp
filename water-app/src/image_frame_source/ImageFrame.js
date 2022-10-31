@@ -37,7 +37,8 @@ class ImageFrame extends React.Component {
             playbackFPS: 2,
             selectedOverlayRows: [],
             timeStepValue: 1,
-            timeStepPeriod: 2
+            timeStepPeriod: 2,
+            useAllImageFrames: false,
         };
 
         // Head cells for metadata
@@ -237,7 +238,7 @@ class ImageFrame extends React.Component {
         totalMS = totalMS * this.state.timeStepValue;
 
         // Load the new image sources
-        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, totalMS, this.state.startDateValue, this.state.endDateValue);
+        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, totalMS, this.state.startDateValue, this.state.endDateValue, this.state.useAllImageFrames);
 
         // Load the images and re-render
         this.loadImages();
@@ -376,6 +377,9 @@ class ImageFrame extends React.Component {
                                         }}
                                     />
                                 </LocalizationProvider>
+                                <div className={"user-controls-spacing-div"}>
+                                    <p></p>
+                                </div>
                                 <Stack direction="row" spacing={2} alignItems="stretch" justifyContent="stretch">
                                     <Button className={"fps-selector-button"}
                                             variant="standard"
@@ -423,17 +427,21 @@ class ImageFrame extends React.Component {
                                         10
                                     </Button>
                                 </Stack>
+                                <div className={"user-controls-spacing-div"}>
+                                    <p></p>
+                                </div>
                                 <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="stretch">
                                     <TextField className="time-step-selector-box"
                                                label={"Time step"}
                                                type="number"
                                                value={this.state.timeStepValue}
+                                               disabled={this.state.useAllImageFrames}
                                                InputProps={{ inputProps: { min: 0, max: 10 } }}
                                                onChange={(event) => {
                                                    this.setState({timeStepValue: event.target.value});
                                                }}
                                     />
-                                    <FormControl style={{minWidth: 120}}>
+                                    <FormControl style={{minWidth: 120}} disabled={this.state.useAllImageFrames}>
                                         <InputLabel id="demo-simple-select-label">Interval</InputLabel>
                                         <Select
                                             labelId="demo-simple-select-label"
@@ -453,6 +461,18 @@ class ImageFrame extends React.Component {
                                         </Select>
                                     </FormControl>
                                 </Stack>
+                                <Button className={"use-all-frames-selector-button"}
+                                        variant={this.state.useAllImageFrames ? "outlined" : "contained"}
+                                        color="primary"
+                                        onClick={() => {
+                                            // Update the state
+                                            this.setState({useAllImageFrames: !this.state.useAllImageFrames});
+                                        }}>
+                                    Use all valid timestamps
+                                </Button>
+                                <div className={"user-controls-spacing-div"}>
+                                    <p></p>
+                                </div>
                                 {overlaySelectorButton}
                             </Stack>
                         </td>
