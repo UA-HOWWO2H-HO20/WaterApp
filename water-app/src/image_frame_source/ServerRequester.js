@@ -49,6 +49,7 @@ class ServerRequester
 
     }
 
+    // Helper function to return an array of the inner HTML of each object in an HTMLCollection
     static getInnerHTMLListFromHTMLCollection(collection) {
         let arr = [];
         for(const item of collection) {
@@ -58,6 +59,7 @@ class ServerRequester
         return arr;
     }
 
+    // Helper to return the first object's inner HTML from an HTMLCollection
     static getFirstFromHTMLCollection(collection) {
         const arr = ServerRequester.getInnerHTMLListFromHTMLCollection(collection);
 
@@ -69,6 +71,7 @@ class ServerRequester
         }
     }
 
+    // Helper function to return an array of the attributes of each object in an HTMLCollection
     static getAttributesFromHTMLCollection(collection) {
         let arr = [];
         for(const item of collection) {
@@ -184,29 +187,50 @@ class ServerRequester
     // Function that returns URLS to images based on an ID query. The MetaDataSidebar will post events
     // with the id number assigned to a row, and the purpose of this function is to return URLs of images
     // associated with those ids.
-    getImageURLsFromSelection(ids, imageMetadata, intervalMS, startDate, endDate, useAllDates) {
+    getImageURLsFromSelection(ids, imageMetadata, intervalMultiplier, intervalPeriod, startDate, endDate, useAllDates) {
         // If using all frames, load them
         // Otherwise, we will load them as we parse the layers
         let frameDateTimes = [];
 
         if(!useAllDates) {
-            // Calculate number of frames
-            const differenceMS = new Date(endDate).getTime() - new Date(startDate).getTime();
-            let frameCount = Math.floor(differenceMS / intervalMS);
+            let currentDate = new Date(startDate);
+            const end = new Date(endDate);
 
-            // Limit the number of frames returned
-            if(frameCount > this.maxImageCount) {
-                console.log(`User requested ${frameCount} images, which is too many. Downsizing result to ${this.maxImageCount}`);
-                frameCount = this.maxImageCount;
-            } else {
-                console.log(`Processing request for ${frameCount} frames`);
+            // Add the start date
+            frameDateTimes.push(new Date(currentDate));
+
+            // Create all dates before the end date
+            while(currentDate.getTime() < end) {
+                let newDate = currentDate;
+
+                // Add the value to the correct field
+                if(intervalPeriod === 0) {                                                  // Seconds
+                    newDate.setSeconds(newDate.getSeconds() + intervalMultiplier);
+                } else if(intervalPeriod === 1) {                                           // Minutes
+                    newDate.setMinutes(newDate.getMinutes() + intervalMultiplier);
+                } else if(intervalPeriod === 2) {                                           // Hours
+                    newDate.setHours(newDate.getHours() + intervalMultiplier);
+                } else if(intervalPeriod === 3) {                                           // Days
+                    newDate.setDate(newDate.getDate() + intervalMultiplier);
+                } else if(intervalPeriod === 4) {                                           // Weeks
+                    newDate.setDate(newDate.getDate() + (7 * intervalMultiplier));
+                } else if(intervalPeriod === 5) {                                           // Months
+                    newDate.setMonth(newDate.getMonth() + intervalMultiplier);
+                } else if(intervalPeriod === 6) {                                           // Years
+                    newDate.setFullYear(newDate.getFullYear() + intervalMultiplier);
+                } else {                                                                    // Error
+                    console.error(`Invalid period in getImageURLsFromSelection: period=${intervalPeriod} multiplier=${intervalMultiplier}`);
+                }
+
+                // Push the date to the list
+                frameDateTimes.push(new Date(newDate));
+
+                // Update the current date
+                currentDate = newDate;
             }
 
-            // Build dates of frames
-            for(let i = 0; i < frameCount; i++) {
-                let intervalTime = new Date((i * intervalMS) + new Date(startDate).getTime());
-                frameDateTimes.push(intervalTime);
-            }
+            // The last item in the array will always be greater than the end, so set the end as the last element
+            frameDateTimes[frameDateTimes.length - 1] = end;
         }
 
         // Build the minimal bounding box shared between the selected layers

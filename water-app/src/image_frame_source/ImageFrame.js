@@ -226,19 +226,8 @@ class ImageFrame extends React.Component {
         // Start the call to lock the button from being pressed
         this.setState({inRefresh: true});
 
-        // Create the interval
-        // TODO: months are different lengths, so we need to change this later on
-        const timeStepMultipliers = [1000, 60, 60, 24, 7, 4, 12];
-        const timeStepPeriod = this.state.timeStepPeriod;
-        let totalMS = 1;
-        for(let i = 0; i <= timeStepPeriod; i++)
-        {
-            totalMS = totalMS * timeStepMultipliers[i];
-        }
-        totalMS = totalMS * this.state.timeStepValue;
-
         // Load the new image sources
-        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, totalMS, this.state.startDateValue, this.state.endDateValue, this.state.useAllImageFrames);
+        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, this.state.timeStepValue, this.state.timeStepPeriod, this.state.startDateValue, this.state.endDateValue, this.state.useAllImageFrames);
 
         // Load the images and re-render
         this.loadImages();
