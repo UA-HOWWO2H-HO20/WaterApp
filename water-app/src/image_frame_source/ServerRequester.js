@@ -6,6 +6,9 @@ class ServerRequester
         // Server IP
         this.hostName = "http://floviz.undo.it/geoserver/floviz/wms";
 
+        // GeoServer namespace to use
+        this.namespace = "floviz:";
+
         // Limit to the number of frames a user can request so that users don"t create ridiculously sized requests
         this.maxImageCount = 250;
 
@@ -97,7 +100,7 @@ class ServerRequester
 
     // Function that makes a request to the server for the metadata, and returns the data as a list of objects
     fetchMetaDataFromServer() {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             let requestURL = `http://floviz.undo.it/geoserver/floviz/wms?VERSION=1.1.1&REQUEST=GetCapabilities&SERVICE=WMS&`;
             let layerObjects = [];
 
@@ -256,8 +259,6 @@ class ServerRequester
         // TODO: this doesn't support stacking layers. Figure out how to do that
         let createdURLs = [];
         for(let i = 0; i < layerNames.length; i++) {
-            // TODO: find out how to load the namespace
-            const nameSpace = 'floviz:';
             const layerName = layerNames[i];
             const layerSRS = srsSpecs[i];
 
@@ -266,7 +267,7 @@ class ServerRequester
                 const bbox = encodeURIComponent(`${xMin},${yMin},${xMax},${yMax}`);
 
                 // Build the request
-                const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, nameSpace + layerName, layerSRS, this.imageWidth, this.imageHeight, bbox, frameDateTimes[j]);
+                const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, this.namespace + layerName, layerSRS, this.imageWidth, this.imageHeight, bbox, frameDateTimes[j]);
 
                 createdURLs.push(URL);
             }
