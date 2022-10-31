@@ -1,17 +1,5 @@
 import $ from "jquery";
 
-// TODO for server:
-// - Enable the most recent date return for requests
-// - Set data resolution to 1 minute
-// - Add actual data sources
-
-// TODO for frontend
-// - XML parsing of data
-// - better time selection
-// - handling for discrete dates?
-// - Parse and save metadata
-// - Pass better params to loader
-
 class ServerRequester
 {
     constructor() {
@@ -35,22 +23,27 @@ class ServerRequester
 
     // Helper to clean up URI creation
     static getURIWithParams(hostname, imageFormat, layer, srs, width, height, bbox, time) {
-        let uri = "";
-        uri = uri + `${hostname}?SERVICE=WMS`;
-        uri = uri + `&VERSION=1.1.1`;
-        uri = uri + `&REQUEST=GetMap`;
-        uri = uri + `&FORMAT=${encodeURIComponent(imageFormat)}`;
-        uri = uri + `&TRANSPARENT=true`;
-        uri = uri + `&STYLES`;
-        uri = uri + `&LAYERS=${encodeURIComponent(layer)}`;
-        uri = uri + `&exceptions=application%2Fvnd.ogc.se_inimage`;
-        uri = uri + `&SRS=${srs}`;
-        uri = uri + `&WIDTH=${encodeURIComponent(width)}`;
-        uri = uri + `&HEIGHT=${encodeURIComponent(height)}`;
-        uri = uri + `&BBOX=${encodeURIComponent(bbox)}`;
-        uri = uri + `&time=${encodeURIComponent(new Date(time).toISOString())}`;
+        try {
+            let uri = `${hostname.toString()}?SERVICE=WMS`;
+            uri = uri + `&VERSION=1.1.1`;
+            uri = uri + `&REQUEST=GetMap`;
+            uri = uri + `&FORMAT=${encodeURIComponent(imageFormat.toString())}`;
+            uri = uri + `&TRANSPARENT=true`;
+            uri = uri + `&STYLES`;
+            uri = uri + `&LAYERS=${encodeURIComponent(layer)}`;
+            uri = uri + `&exceptions=application%2Fvnd.ogc.se_inimage`;
+            uri = uri + `&SRS=${encodeURIComponent(srs)}`;
+            uri = uri + `&WIDTH=${width.toString()}`;
+            uri = uri + `&HEIGHT=${height.toString()}`;
+            uri = uri + `&BBOX=${bbox.toString()}`;
+            uri = uri + `&time=${new Date(time).toISOString()}`;
 
-        return uri;
+            return uri;
+        } catch(err) {
+            console.error(`Error in getURIWithParams: ${err}`);
+            return `https://via.placeholder.com/${width}x${height}.jpeg?text=Failed to load layer ${layer}`;
+        }
+
     }
 
     static getInnerHTMLListFromHTMLCollection(collection) {
@@ -122,7 +115,7 @@ class ServerRequester
                         const srs = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName("SRS"));
                         const times = ServerRequester.getFirstFromHTMLCollection(layer.getElementsByTagName("Extent"));
 
-                        // If the title doesn"t exist, use the layer name
+                        // If the title doesn't exist, use the layer name
                         if(title.length === 0)
                             title = name;
 
@@ -224,6 +217,12 @@ class ServerRequester
                     // Save the SRS spec
                     srsSpecs.push(layer.srs);
 
+                    // TODO: this just uses the raw layer times. remove later
+                    // let rawTimes = layer.raw_times.split(',');
+                    // rawTimes.forEach((t) => {
+                    //     frameDateTimes.push(new Date(t).toISOString());
+                    // });
+
                     // Update the bounds
                     if(i === 0) {
                         xMin = layer.bbox_xmin;
@@ -240,19 +239,31 @@ class ServerRequester
             }
         }
 
+        // Round the bounding box to 2 decimal places
+        xMin = Math.round((parseFloat(xMin) + Number.EPSILON) * 100) / 100;
+        xMax = Math.round((parseFloat(xMax) + Number.EPSILON) * 100) / 100;
+        yMin = Math.round((parseFloat(yMin) + Number.EPSILON) * 100) / 100;
+        yMax = Math.round((parseFloat(yMax) + Number.EPSILON) * 100) / 100;
+
         // Build list of URLs
+        // TODO: this doesn't support stacking layers. Figure out how to do that
         let createdURLs = [];
         for(let i = 0; i < layerNames.length; i++) {
+            // TODO: find out how to load the namespace
+            const nameSpace = 'floviz:';
+            const layerName = layerNames[i];
+            const layerSRS = srsSpecs[i];
+
             for(let j = 0; j < frameCount; j++) {
-                const bbox = `${xMin},${yMin},${xMax},${yMax}`;
-                const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, layerNames[i], layerNames[i], this.imageWidth, this.imageHeight, bbox, frameDateTimes[j]);
+                // Encode the bounding box
+                const bbox = encodeURIComponent(`${xMin},${yMin},${xMax},${yMax}`);
+
+                // Build the request
+                const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, nameSpace + layerName, layerSRS, this.imageWidth, this.imageHeight, bbox, frameDateTimes[j]);
+
                 createdURLs.push(URL);
             }
-
-            // TODO: combine the frames here
         }
-
-        console.log(createdURLs.join('\n'));
 
         return createdURLs;
     }

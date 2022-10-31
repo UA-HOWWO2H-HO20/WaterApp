@@ -117,7 +117,7 @@ class ImageFrame extends React.Component {
             this.imageSources.map(this.cacheImage)
         ).then(() => {
             this.setState({ imagesLoaded: true });
-            console.log(`Loaded image sources: ${this.imageSources}`);
+            console.log(`Successfully loaded ${this.imageSources.length} image sources`);
         }, () => {
             console.error('Failed to load images');
         });           
@@ -224,8 +224,6 @@ class ImageFrame extends React.Component {
     async handleOverlayButtonClick() {
         // Start the call to lock the button from being pressed
         this.setState({inRefresh: true});
-
-        console.log('Frame got request for rows:' + this.state.selectedOverlayRows.toString());
 
         // Create the interval
         // TODO: months are different lengths, so we need to change this later on
