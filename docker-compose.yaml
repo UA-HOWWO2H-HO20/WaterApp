@@ -10,6 +10,8 @@ services:
     environment:
       INSTALL_EXTENSIONS: true
       STABLE_EXTENSIONS: "wps,ysld,wps-download"
+      SSL: true
+      CORS_ENABLED: true
       # HTTP_PROXY_NAME: testplease
       # HTTP_PROXY_PORT: 6789
     networks:
