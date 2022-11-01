@@ -87,9 +87,6 @@ class ImageFrame extends React.Component {
             }];
 
         // Original image sources for initial animation
-        // this.imageSources = ["https://via.placeholder.com/960x720.jpeg?text=Image+1",
-        //     "https://via.placeholder.com/960x720.jpeg?text=Image+2",
-        //     "https://via.placeholder.com/960x720.jpeg?text=Image+3"];
         this.imageSources = [];
 
         // Create a server requester object
@@ -98,7 +95,8 @@ class ImageFrame extends React.Component {
         // URL of image to be shown if data has not loaded yet.
         // This is a site with an API to create placeholder images, good enough for our purposes.
         // This could be replaced with some other image later on if needed.
-        this.dataNotLoadedBackground = "https://via.placeholder.com/720x720.jpeg?text=Fetching data from server...";
+        this.notLoadedImageSize = 720;
+        this.dataNotLoadedBackground = `https://via.placeholder.com/${this.notLoadedImageSize}x${this.notLoadedImageSize}.jpeg?text=Fetching data from server...`;
 
         // Bindings
         this.setState = this.setState.bind(this);
@@ -231,8 +229,6 @@ class ImageFrame extends React.Component {
 
     // Requests new data from the server when the fetch button is pressed
     handleOverlayButtonClick() {
-        console.log('in request processor')
-
         // Start the call to lock the button from being pressed
         this.setState({inRefresh: true});
 
@@ -262,9 +258,6 @@ class ImageFrame extends React.Component {
                 endDate = new Date(layer.end_date);
             }
         }
-
-        console.log(`Start: ${startDate}`);
-        console.log(`End: ${endDate}`);
 
         // Update the initial state variables
         this.setState({inRefresh: true, useAllImageFrames: true, selectedOverlayRows: selectedRows, selectionStartDate: startDate, startDateValue: startDate, selectionEndDate: endDate, endDateValue: endDate});
@@ -321,7 +314,15 @@ class ImageFrame extends React.Component {
         }
 
         // Create the canvas component. If the images are not loaded, show the placeholder
-        let canvasComponent = this.state.imagesLoaded ? <canvas id="image-frame" /> : <img id="placeholder-image" alt="" src={this.dataNotLoadedBackground}/>;
+        let canvasComponent = this.state.imagesLoaded ? <canvas id="image-frame" /> : <Stack direction={"row"}>
+            <div className="placeholder-image-spacer" >
+                <p></p>
+            </div>
+            <img id="placeholder-image" src={this.dataNotLoadedBackground} alt="" />
+            <div className="placeholder-image-spacer" >
+                <p></p>
+            </div>
+        </Stack>;
 
         // Fetch server data
         const metadataRows = this.state.imageMetadata;
@@ -340,179 +341,163 @@ class ImageFrame extends React.Component {
         }
 
         return (
-            <div className={"map-container"}>
-                <table className={"map-table"}>
-                    <tbody>
-                    <tr>
-                        <td className={"map-sidebar-td"}>
-                            <Box sx={{ height: '90vh', width: '20vw' }}>
-                                <DataGrid id="metadata-grid"
-                                          rows={metadataRows}
-                                          columns={metadataColumns}
-                                          pageSize={10}
-                                          hideFooterPagination
-                                          checkboxSelection
-                                          onSelectionModelChange={(data) => {
-                                              this.handleOverlayRowSelect(data);
-                                          }}
+            <div className={"outer-container"}>
+                <Stack direction="row">
+                    <div className={"sidebar-div"}>
+                        <Box sx={{ height: '90vh', width: '20vw' }}>
+                            <DataGrid id="metadata-grid"
+                                      rows={metadataRows}
+                                      columns={metadataColumns}
+                                      pageSize={10}
+                                      hideFooterPagination
+                                      checkboxSelection
+                                      onSelectionModelChange={(data) => {
+                                          this.handleOverlayRowSelect(data);
+                                      }}
+                            />
+                        </Box>
+                    </div>
+                    <div id="image-frame-container">
+                        <Stack>
+                            {canvasComponent}
+                            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
+                                <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
+                                    {pausePlayIcon}
+                                </SvgIcon>
+                                <Slider
+                                    id="image-frame-slider"
+                                    aria-label="Image Index"
+                                    value={this.state.currentFrame + 1}
+                                    valueLabelDisplay="auto"
+                                    step={1}
+                                    marks
+                                    min={this.state.minFrame + 1}
+                                    max={this.state.maxFrame + 1}
+                                    onChange={(e, val) => { this.handleSliderInput(val); }}
                                 />
-                            </Box>
-                        </td>
-                        <td className={"map-td"}>
-                            <div id="image-frame-container">
-                                <table>
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            {canvasComponent}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
-                                                <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
-                                                    {pausePlayIcon}
-                                                </SvgIcon>
-                                                <Slider
-                                                    id="image-frame-slider"
-                                                    aria-label="Image Index"
-                                                    value={this.state.currentFrame + 1}
-                                                    valueLabelDisplay="auto"
-                                                    step={1}
-                                                    marks
-                                                    min={this.state.minFrame + 1}
-                                                    max={this.state.maxFrame + 1}
-                                                    onChange={(e, val) => { this.handleSliderInput(val); }}
-                                                />
-                                            </Stack>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                            </Stack>
+                        </Stack>
+                    </div>
+                    <div className={"sidebar-div"}>
+                        <Stack sx={{ height: '90vh', width: '20vw', mt: '3vh' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DateTimePicker
+                                    label={"Start"}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    value={this.state.startDateValue}
+                                    onChange={(value) => {
+                                        this.setState({startDateValue: value});
+                                    }}
+                                />
+                                <DateTimePicker
+                                    label={"End"}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    value={this.state.endDateValue}
+                                    onChange={(value) => {
+                                        this.setState({endDateValue: value});
+                                    }}
+                                />
+                            </LocalizationProvider>
+                            <div className={"user-controls-spacing-div"}>
+                                <p></p>
                             </div>
-                        </td>
-                        <td className={"map-sidebar-td"}>
-                            <Stack sx={{ height: '87vh', width: '20vw' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DateTimePicker
-                                        label={"Start"}
-                                        renderInput={(params) => <TextField {...params} />}
-                                        value={this.state.startDateValue}
-                                        onChange={(value) => {
-                                            this.setState({startDateValue: value});
-                                        }}
-                                    />
-                                    <DateTimePicker
-                                        label={"End"}
-                                        renderInput={(params) => <TextField {...params} />}
-                                        value={this.state.endDateValue}
-                                        onChange={(value) => {
-                                            this.setState({endDateValue: value});
-                                        }}
-                                    />
-                                </LocalizationProvider>
-                                <div className={"user-controls-spacing-div"}>
-                                    <p></p>
-                                </div>
-                                <Stack direction="row" spacing={2} alignItems="stretch" justifyContent="stretch">
-                                    <Button className={"fps-selector-button"}
-                                            variant="standard"
-                                            color="primary"
-                                            disabled={true}>
-                                        Playback FPS
-                                    </Button>
-                                    <Button className={"fps-selector-button"}
-                                            variant={this.state.playbackFPS === 2 ? "contained" : "outlined"}
-                                            color="primary"
-                                            onClick={() => {
-                                                // Reset the display interval
-                                                clearInterval(this.displayInterval);
-                                                this.displayInterval = setInterval(this.displayData, (1000 / 2));
-
-                                                // Update the state
-                                                this.setState({playbackFPS: 2});
-                                            }}>
-                                        2
-                                    </Button>
-                                    <Button className={"fps-selector-button"}
-                                            variant={this.state.playbackFPS === 5 ? "contained" : "outlined"}
-                                            color="primary"
-                                            onClick={() => {
-                                                // Reset the display interval
-                                                clearInterval(this.displayInterval);
-                                                this.displayInterval = setInterval(this.displayData, (1000 / 5));
-
-                                                // Update the state
-                                                this.setState({playbackFPS: 5});
-                                            }}>
-                                        5
-                                    </Button>
-                                    <Button className={"fps-selector-button"}
-                                            variant={this.state.playbackFPS === 10 ? "contained" : "outlined"}
-                                            color="primary"
-                                            onClick={() => {
-                                                // Reset the display interval
-                                                clearInterval(this.displayInterval);
-                                                this.displayInterval = setInterval(this.displayData, (1000 / 10));
-
-                                                // Update the state
-                                                this.setState({playbackFPS: 10});
-                                            }}>
-                                        10
-                                    </Button>
-                                </Stack>
-                                <div className={"user-controls-spacing-div"}>
-                                    <p></p>
-                                </div>
-                                <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="stretch">
-                                    <TextField className="time-step-selector-box"
-                                               label={"Time step"}
-                                               type="number"
-                                               value={this.state.timeStepValue}
-                                               disabled={this.state.useAllImageFrames}
-                                               InputProps={{ inputProps: { min: 0, max: 10 } }}
-                                               onChange={(event) => {
-                                                   this.setState({timeStepValue: event.target.value});
-                                               }}
-                                    />
-                                    <FormControl style={{minWidth: 120}} disabled={this.state.useAllImageFrames}>
-                                        <InputLabel id="demo-simple-select-label">Interval</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={this.state.timeStepPeriod}
-                                            label="Select"
-                                            onChange={(event) => {
-                                                this.setState({timeStepPeriod: event.target.value});
-                                            }}
-                                        >
-                                            <MenuItem value={1}>Minutes</MenuItem>
-                                            <MenuItem value={2}>Hours</MenuItem>
-                                            <MenuItem value={3}>Days</MenuItem>
-                                            <MenuItem value={4}>Weeks</MenuItem>
-                                            <MenuItem value={5}>Months</MenuItem>
-                                            <MenuItem value={6}>Years</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Stack>
-                                <Button className={"use-all-frames-selector-button"}
-                                        variant={this.state.useAllImageFrames ? "outlined" : "contained"}
+                            <Stack direction="row" spacing={2} alignItems="stretch" justifyContent="stretch">
+                                <Button className={"fps-selector-button"}
+                                        variant="standard"
+                                        color="primary"
+                                        disabled={true}>
+                                    Playback FPS
+                                </Button>
+                                <Button className={"fps-selector-button"}
+                                        variant={this.state.playbackFPS === 2 ? "contained" : "outlined"}
                                         color="primary"
                                         onClick={() => {
+                                            // Reset the display interval
+                                            clearInterval(this.displayInterval);
+                                            this.displayInterval = setInterval(this.displayData, (1000 / 2));
+
                                             // Update the state
-                                            this.setState({useAllImageFrames: !this.state.useAllImageFrames});
+                                            this.setState({playbackFPS: 2});
                                         }}>
-                                    Use all valid timestamps
+                                    2
                                 </Button>
-                                <div className={"user-controls-spacing-div"}>
-                                    <p></p>
-                                </div>
-                                {overlaySelectorButton}
+                                <Button className={"fps-selector-button"}
+                                        variant={this.state.playbackFPS === 5 ? "contained" : "outlined"}
+                                        color="primary"
+                                        onClick={() => {
+                                            // Reset the display interval
+                                            clearInterval(this.displayInterval);
+                                            this.displayInterval = setInterval(this.displayData, (1000 / 5));
+
+                                            // Update the state
+                                            this.setState({playbackFPS: 5});
+                                        }}>
+                                    5
+                                </Button>
+                                <Button className={"fps-selector-button"}
+                                        variant={this.state.playbackFPS === 10 ? "contained" : "outlined"}
+                                        color="primary"
+                                        onClick={() => {
+                                            // Reset the display interval
+                                            clearInterval(this.displayInterval);
+                                            this.displayInterval = setInterval(this.displayData, (1000 / 10));
+
+                                            // Update the state
+                                            this.setState({playbackFPS: 10});
+                                        }}>
+                                    10
+                                </Button>
                             </Stack>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                            <div className={"user-controls-spacing-div"}>
+                                <p></p>
+                            </div>
+                            <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="stretch">
+                                <TextField className="time-step-selector-box"
+                                           label={"Time step"}
+                                           type="number"
+                                           value={this.state.timeStepValue}
+                                           disabled={this.state.useAllImageFrames}
+                                           InputProps={{ inputProps: { min: 0, max: 10 } }}
+                                           onChange={(event) => {
+                                               this.setState({timeStepValue: event.target.value});
+                                           }}
+                                />
+                                <FormControl style={{minWidth: 120}} disabled={this.state.useAllImageFrames}>
+                                    <InputLabel id="demo-simple-select-label">Interval</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={this.state.timeStepPeriod}
+                                        label="Select"
+                                        onChange={(event) => {
+                                            this.setState({timeStepPeriod: event.target.value});
+                                        }}
+                                    >
+                                        <MenuItem value={1}>Minutes</MenuItem>
+                                        <MenuItem value={2}>Hours</MenuItem>
+                                        <MenuItem value={3}>Days</MenuItem>
+                                        <MenuItem value={4}>Weeks</MenuItem>
+                                        <MenuItem value={5}>Months</MenuItem>
+                                        <MenuItem value={6}>Years</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Stack>
+                            <Button className={"use-all-frames-selector-button"}
+                                    variant={this.state.useAllImageFrames ? "outlined" : "contained"}
+                                    color="primary"
+                                    onClick={() => {
+                                        // Update the state
+                                        this.setState({useAllImageFrames: !this.state.useAllImageFrames});
+                                    }}>
+                                Use all valid timestamps
+                            </Button>
+                            <div className={"user-controls-spacing-div"}>
+                                <p></p>
+                            </div>
+                            {overlaySelectorButton}
+                        </Stack>
+                    </div>
+                </Stack>
             </div>
         )
     }
