@@ -26,7 +26,7 @@ class ImageFrame extends React.Component {
             minFrame: 0,
             maxFrame: 2,
             currentFrame: 0,
-            running: true,
+            running: false,
             imagesLoaded: false,
             inOverlayRefresh: false,
             imageMetadata: [],
@@ -87,9 +87,10 @@ class ImageFrame extends React.Component {
             }];
 
         // Original image sources for initial animation
-        this.imageSources = ["https://via.placeholder.com/960x720.jpeg?text=Image+1",
-            "https://via.placeholder.com/960x720.jpeg?text=Image+2",
-            "https://via.placeholder.com/960x720.jpeg?text=Image+3"];
+        // this.imageSources = ["https://via.placeholder.com/960x720.jpeg?text=Image+1",
+        //     "https://via.placeholder.com/960x720.jpeg?text=Image+2",
+        //     "https://via.placeholder.com/960x720.jpeg?text=Image+3"];
+        this.imageSources = [];
 
         // Create a server requester object
         this.requester = new ServerRequester();
@@ -97,8 +98,9 @@ class ImageFrame extends React.Component {
         // URL of image to be shown if data has not loaded yet.
         // This is a site with an API to create placeholder images, good enough for our purposes.
         // This could be replaced with some other image later on if needed.
-        this.dataNotLoadedBackground = "https://via.placeholder.com/960x720.jpeg?text=Fetching data from server...";
+        this.dataNotLoadedBackground = "https://via.placeholder.com/720x720.jpeg?text=Fetching data from server...";
 
+        // Bindings
         this.setState = this.setState.bind(this);
         this.renderImage = this.renderImage.bind(this);
         this.displayData = this.displayData.bind(this);
@@ -166,6 +168,7 @@ class ImageFrame extends React.Component {
         return new Promise((r) => {r()});
     }
 
+    // Helper to run the render method and switch between static or running
     async displayData() {
         // Load objects from state once to keep it efficient
         let nextFrame = this.state.currentFrame;
@@ -192,37 +195,44 @@ class ImageFrame extends React.Component {
         }
     }
 
+    // Runs when component is rendered
     componentDidMount() {
         // Begin the initial metadata fetch
         this.requester.fetchMetaDataFromServer().then((result) => {
             console.log('Metadata fetch completed by requester.');
 
+            // Display the first layer
+            this.handleInitialDataFetch(result)
+
             // Save the metadata locally
             this.setState({imageMetadata: result});
-        });
-        
-        // Start loading the initial images
-        this.loadImages();
 
-        // Start an interval to display the data
-        this.displayInterval = setInterval(this.displayData, (1000 / this.state.playbackFPS));
+            // Start an interval to display the data
+            this.displayInterval = setInterval(this.displayData, (1000 / this.state.playbackFPS));
+        });
     }
 
+    // Runs before component is removed from the screen
     componentWillUnmount() {
         // Clear display interval
         clearInterval(this.displayInterval);
     }
 
+    // Updates the state to stop the animation when the user selects a bubble on the screen
     handleSliderInput(newValue) {
         this.setState({running: false, currentFrame: newValue - 1});
     }
 
+    // Toggles whether the animation is running when icon is pressed
     handlePlayButtonClick() {
         const oldState = this.state.running;
         this.setState({running: !oldState});
     }
 
-    async handleOverlayButtonClick() {
+    // Requests new data from the server when the fetch button is pressed
+    handleOverlayButtonClick() {
+        console.log('in request processor')
+
         // Start the call to lock the button from being pressed
         this.setState({inRefresh: true});
 
@@ -236,6 +246,41 @@ class ImageFrame extends React.Component {
         this.setState({inRefresh: false, maxFrame: this.imageSources.length - 1});
     }
 
+    // Runs the initial fetch after the metadata is loaded so something is playing
+    handleInitialDataFetch(metadata) {
+        // The first layer will be defaulted to running when the animation starts
+        const initialLayerToShow = 0;
+
+        const selectedRows = [];
+        selectedRows.push(initialLayerToShow);
+
+        // Load the layer info
+        let startDate = new Date(), endDate = new Date();
+        for(const layer of metadata) {
+            if(layer.id === initialLayerToShow) {
+                startDate = new Date(layer.start_date);
+                endDate = new Date(layer.end_date);
+            }
+        }
+
+        console.log(`Start: ${startDate}`);
+        console.log(`End: ${endDate}`);
+
+        // Update the initial state variables
+        this.setState({inRefresh: true, useAllImageFrames: true, selectedOverlayRows: selectedRows, selectionStartDate: startDate, startDateValue: startDate, selectionEndDate: endDate, endDateValue: endDate});
+
+        // Run the render
+        // Note: have to use constants or initialized values for this because the setState method is so slow
+        this.imageSources = this.requester.getImageURLsFromSelection(selectedRows, metadata, 1, 1, startDate, endDate, true);
+
+        // Load the images and re-render
+        this.loadImages();
+
+        // Unlock the selector
+        this.setState({inRefresh: false, maxFrame: this.imageSources.length - 1, running: true});
+    }
+
+    // Runs when a row is selected to update some state variables
     handleOverlayRowSelect(data) {
         // Load the start and end dates so that the selector will be populated
         let maxStartTime = new Date(0);
