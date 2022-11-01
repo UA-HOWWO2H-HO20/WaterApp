@@ -1,0 +1,47 @@
+#image-frame-container {
+    text-align: center;
+    width: 60vw;
+    height: 90vh;
+    display: block;
+    margin: 3vh auto 5vh;
+    vertical-align: top;
+}
+
+#image-frame {
+    margin: 0;
+    padding: 0;
+    width: 60vw;
+    height: 60vh;
+    vertical-align: top;
+}
+
+#placeholder-image {
+    margin: 0;
+    padding: 0;
+    width: 60vw;
+    height: 60vh;
+    vertical-align: top;
+}
+
+#image-play-button {
+    width: 2vw;
+    height: 2vw;
+}
+
+#image-frame-slider {
+    width: 50vw;
+    color: #38b6ff;
+}
+
+#metadata-grid {
+    word-wrap: break-word;
+}
+
+#metadata-grid-button {
+    width: 20vw;
+}
+
+.user-controls-spacing-div {
+    width: 100%;
+    height: 3vh;
+}

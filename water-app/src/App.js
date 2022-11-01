@@ -1,8 +1,7 @@
 import React from "react";
 import Header from "./header_source/Header";
 import Footer from "./footer_source/Footer";
-import GifImageFrame from "./map_source/GifImageFrame"
-import MetadataSidebar from "./metadata_sidebar_source/MetadataSidebar";
+import ImageFrame from "./image_frame_source/ImageFrame"
 
 import "./App.css";
 
@@ -25,24 +24,7 @@ class App extends React.Component {
         return (
             <div className="App">
                 <Header />
-                <div className={"map-container"}>
-                    <table className={"map-table"}>
-                        <tbody>
-                        <tr>
-                            <td className={"map-sidebar-td"}>
-                                <MetadataSidebar />
-                            </td>
-                            <td className={"map-td"}>
-                                    <GifImageFrame />
-                            </td>
-                            <td className={"map-sidebar-td"}>
-                                {/*Horizontal spacing to center map*/}
-                                <p></p>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <ImageFrame />
                 <Footer />
             </div>
         )

@@ -1,16 +1,16 @@
 {
-  "short_name": "TWA",
-  "name": "The Water App",
+  "short_name": "FLOVIZ",
+  "name": "Floviz - Stream Flow and Water Data",
   "icons": [
     {
-      "src": "raindrops_515.ico",
+      "src": "floviz.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "raindrops_515.svg",
+      "src": "floviz.png",
       "type": "image/png",
-      "sizes": "515x515"
+      "sizes": "500x500"
     }
   ],
   "start_url": ".",
