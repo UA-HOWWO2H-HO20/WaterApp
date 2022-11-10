@@ -261,10 +261,15 @@ class ImageFrame extends React.Component {
 
         // Load the layer info
         let startDate = new Date(), endDate = new Date();
+        let xMin = 0, yMin = 0, xMax = 0, yMax = 0;
         for(const layer of metadata) {
             if(layer.id === initialLayerToShow) {
                 startDate = new Date(layer.start_date);
                 endDate = new Date(layer.end_date);
+                xMin = layer.bbox_xmin === 'N/A' ? 0.0 : layer.bbox_xmin;
+                xMax = layer.bbox_xmax === 'N/A' ? 0.0 : layer.bbox_xmax;
+                yMin = layer.bbox_ymin === 'N/A' ? 0.0 : layer.bbox_ymin;
+                yMax = layer.bbox_ymax === 'N/A' ? 0.0 : layer.bbox_ymax;
             }
         }
 
@@ -272,7 +277,22 @@ class ImageFrame extends React.Component {
         console.log(`End: ${endDate}`);
 
         // Update the initial state variables
-        this.setState({inRefresh: true, useAllImageFrames: true, selectedOverlayRows: selectedRows, selectionStartDate: startDate, startDateValue: startDate, selectionEndDate: endDate, endDateValue: endDate});
+        this.setState({inRefresh: true,
+            useAllImageFrames: true,
+            selectedOverlayRows: selectedRows,
+            selectionStartDate: startDate,
+            startDateValue: startDate,
+            selectionEndDate: endDate,
+            endDateValue: endDate,
+            selectionBBoxXMin: xMin,
+            selectionBBoxXMax: xMax,
+            selectionBBoxYMin: yMin,
+            selectionBBoxYMax: yMax,
+            selectionBBoxXMinValue: xMin,
+            selectionBBoxXMaxValue: xMax,
+            selectionBBoxYMinValue: yMin,
+            selectionBBoxYMaxValue: yMax,
+        });
 
         // Run the render
         // Note: have to use constants or initialized values for this because the setState method is so slow
