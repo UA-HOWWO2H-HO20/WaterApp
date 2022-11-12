@@ -9,7 +9,7 @@ services:
       - ./geoserver/geoserver_data:/opt/geoserver_data
     environment:
       INSTALL_EXTENSIONS: true
-      STABLE_EXTENSIONS: "wps,ysld,wps-download"
+      STABLE_EXTENSIONS: "wps,ysld,wps-download,css"
       SSL: true
       CORS_ENABLED: true
       # HTTP_PROXY_NAME: testplease
@@ -29,8 +29,27 @@ services:
     networks:
       - internal-network
 
+  osm-tile-server:
+    image: overv/openstreetmap-tile-server
+    # command: import
+    command: run
+    volumes:
+      # - ./osm-tile-server/alabama.osm.pbf:/data/region.osm.pbf
+      - ./osm-tile-server/data/database/:/data/database/
+      - ./osm-tile-server/data/tiles/:/data/tiles/
+    environment:
+      DOWNLOAD_PBF: http://download.geofabrik.de/north-america/us/alabama-latest.osm.pbf
+      DOWNLOAD_POLY: http://download.geofabrik.de/north-america/us/alabama.poly
+      ALLOW_CORS: enabled
+    ports:
+      - 8080:80
+    networks:
+      - internal-network
+
 volumes:
   geoserver-volume:
+  osm-data:
+  osm-tiles:
 
 networks:
   internal-network: {}

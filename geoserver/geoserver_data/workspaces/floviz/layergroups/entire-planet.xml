@@ -1,0 +1,35 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl--32609f8e:1846ac35a36:5e56</id>
+  <name>entire-planet</name>
+  <mode>SINGLE</mode>
+  <workspace>
+    <id>WorkspaceInfoImpl-4742b9d2:183f57510e6:-7ffe</id>
+  </workspace>
+  <internationalTitle/>
+  <internationalAbstract/>
+  <publishables>
+    <published type="layer">
+      <id>LayerInfoImpl--32609f8e:1846ac35a36:-3cbc</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl--32609f8e:1846ac35a36:-38f4</id>
+    </published>
+  </publishables>
+  <styles>
+    <style>
+      <id>StyleInfoImpl--32609f8e:1846ad6a4d0:-66</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--32609f8e:1846ac0e842:-37af</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>-2.003751E7</minx>
+    <maxx>2.003751E7</maxx>
+    <miny>-1.477665E7</miny>
+    <maxy>2.003751E7</maxy>
+    <crs class="projected">EPSG:3857</crs>
+  </bounds>
+  <dateCreated>2022-11-12 07:48:51.639 UTC</dateCreated>
+  <dateModified>2022-11-12 08:00:02.336 UTC</dateModified>
+</layerGroup>
