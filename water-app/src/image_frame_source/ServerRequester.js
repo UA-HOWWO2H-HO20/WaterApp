@@ -280,7 +280,6 @@ class ServerRequester
         yMax = Math.round((parseFloat(yMax) + Number.EPSILON) * 100) / 100;
 
         // Build list of URLs
-        // TODO: this doesn't support stacking layers. Figure out how to do that
         let createdURLs = [];
         for(let i = 0; i < layerNames.length; i++) {
             const layerName = layerNames[i];

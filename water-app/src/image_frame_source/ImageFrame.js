@@ -32,6 +32,14 @@ class ImageFrame extends React.Component {
             imageMetadata: [],
             selectionStartDate: new Date(),
             selectionEndDate: new Date(),
+            selectionBBoxXMin: 0.0,
+            selectionBBoxXMax: 0.0,
+            selectionBBoxYMin: 0.0,
+            selectionBBoxYMax: 0.0,
+            selectionBBoxXMinValue: 0.0,
+            selectionBBoxXMaxValue: 0.0,
+            selectionBBoxYMinValue: 0.0,
+            selectionBBoxYMaxValue: 0.0,
             startDateValue: new Date(),
             endDateValue: new Date(),
             playbackFPS: 2,
@@ -87,10 +95,10 @@ class ImageFrame extends React.Component {
             }];
 
         // Original image sources for initial animation
-        // this.imageSources = ["https://via.placeholder.com/960x720.jpeg?text=Image+1",
-        //     "https://via.placeholder.com/960x720.jpeg?text=Image+2",
-        //     "https://via.placeholder.com/960x720.jpeg?text=Image+3"];
         this.imageSources = [];
+
+        // Cached image objects
+        this.cachedImageObjects = [];
 
         // Create a server requester object
         this.requester = new ServerRequester();
@@ -116,6 +124,8 @@ class ImageFrame extends React.Component {
     
     // Helper to request the images from the backend server and update the state with their URLS
     loadImages() {
+        this.cachedImageObjects = [];
+
         Promise.all(
             this.imageSources.map(this.cacheImage)
         ).then(() => {
@@ -130,9 +140,11 @@ class ImageFrame extends React.Component {
     cacheImage(path) {
         return new Promise((resolve, reject) => {
             const img = new Image();
-            img.onload = () => resolve(path);
+            img.onload = () => {
+                this.cachedImageObjects.push(img);
+                resolve(path);
+            }
             img.onerror = () => reject();
-
             img.src = path;
         });
     }
@@ -148,8 +160,15 @@ class ImageFrame extends React.Component {
         canvas.height = window.innerHeight;
 
         // Create the image
-        let image = new Image();
-        image.src = this.imageSources.at(imageIndex);
+        // let image = new Image();
+        // image.src = this.imageSources.at(imageIndex);
+        let image = this.cachedImageObjects.at(imageIndex);
+
+        if(!image)
+        {
+            console.log(`Failed to render image: ${this.imageSources.at(imageIndex)}`)
+            return new Promise((r) => {r()});
+        }
 
         // Calculate image scaling
         const horizontalRatio = canvas.width  / image.width;
@@ -256,10 +275,15 @@ class ImageFrame extends React.Component {
 
         // Load the layer info
         let startDate = new Date(), endDate = new Date();
+        let xMin = 0, yMin = 0, xMax = 0, yMax = 0;
         for(const layer of metadata) {
             if(layer.id === initialLayerToShow) {
                 startDate = new Date(layer.start_date);
                 endDate = new Date(layer.end_date);
+                xMin = layer.bbox_xmin === 'N/A' ? 0.0 : layer.bbox_xmin;
+                xMax = layer.bbox_xmax === 'N/A' ? 0.0 : layer.bbox_xmax;
+                yMin = layer.bbox_ymin === 'N/A' ? 0.0 : layer.bbox_ymin;
+                yMax = layer.bbox_ymax === 'N/A' ? 0.0 : layer.bbox_ymax;
             }
         }
 
@@ -267,7 +291,22 @@ class ImageFrame extends React.Component {
         console.log(`End: ${endDate}`);
 
         // Update the initial state variables
-        this.setState({inRefresh: true, useAllImageFrames: true, selectedOverlayRows: selectedRows, selectionStartDate: startDate, startDateValue: startDate, selectionEndDate: endDate, endDateValue: endDate});
+        this.setState({inRefresh: true,
+            useAllImageFrames: true,
+            selectedOverlayRows: selectedRows,
+            selectionStartDate: startDate,
+            startDateValue: startDate,
+            selectionEndDate: endDate,
+            endDateValue: endDate,
+            selectionBBoxXMin: xMin,
+            selectionBBoxXMax: xMax,
+            selectionBBoxYMin: yMin,
+            selectionBBoxYMax: yMax,
+            selectionBBoxXMinValue: xMin,
+            selectionBBoxXMaxValue: xMax,
+            selectionBBoxYMinValue: yMin,
+            selectionBBoxYMaxValue: yMax,
+        });
 
         // Run the render
         // Note: have to use constants or initialized values for this because the setState method is so slow
@@ -304,10 +343,47 @@ class ImageFrame extends React.Component {
                 minEndTime = new Date(item.end_date);
         });
 
+        // Load the bounding box values
+        let minX = 0.0;
+        let maxX = 0.0;
+        let minY = 0.0;
+        let maxY = 0.0;
+
+        data.forEach((index) => {
+            let item;
+
+            for(let j = 0; j < this.state.imageMetadata.length; j++) {
+                const candidate = this.state.imageMetadata.at(j);
+
+                if(candidate.id === index) {
+                    item = candidate;
+                    break;
+                }
+            }
+
+            if(item.bbox_xmin !== 'N/A' && item.bbox_xmin < minX)
+                minX = item.bbox_xmin
+            if(item.bbox_xmax !== 'N/A' && item.bbox_xmax > maxX)
+                maxX = item.bbox_xmax
+            if(item.bbox_ymin !== 'N/A' && item.bbox_ymin < minY)
+                minY = item.bbox_ymin
+            if(item.bbox_ymax !== 'N/A' && item.bbox_ymax > maxY)
+                maxY = item.bbox_ymax
+        });
+
         this.setState({ selectionStartDate: maxStartTime,
             selectionEndDate: minEndTime,
             startDateValue: maxStartTime,
-            endDateValue: minEndTime });
+            endDateValue: minEndTime,
+            selectionBBoxXMin: minX,
+            selectionBBoxXMax: maxX,
+            selectionBBoxYMin: minY,
+            selectionBBoxYMax: maxY,
+            selectionBBoxXMinValue: minX,
+            selectionBBoxXMaxValue: maxX,
+            selectionBBoxYMinValue: minY,
+            selectionBBoxYMaxValue: maxY,
+        });
 
         this.setState({selectedOverlayRows: data});
     }
@@ -476,10 +552,10 @@ class ImageFrame extends React.Component {
                                                }}
                                     />
                                     <FormControl style={{minWidth: 120}} disabled={this.state.useAllImageFrames}>
-                                        <InputLabel id="demo-simple-select-label">Interval</InputLabel>
+                                        <InputLabel id="interval-selection-label">Interval</InputLabel>
                                         <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
+                                            labelId="interval-selection-label"
+                                            id="interval-selection-field"
                                             value={this.state.timeStepPeriod}
                                             label="Select"
                                             onChange={(event) => {
@@ -504,6 +580,53 @@ class ImageFrame extends React.Component {
                                         }}>
                                     Use all valid timestamps
                                 </Button>
+                                <div className={"user-controls-spacing-div"}>
+                                    <p></p>
+                                </div>
+                                <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="center">
+                                    <TextField style={{minWidth: 150}}
+                                               className="bbox-selector"
+                                               label={"Lower X Bound"}
+                                               type="number"
+                                               value={this.state.selectionBBoxXMinValue}
+                                               InputProps={{ inputProps: { min: this.state.selectionBBoxXMin, max: this.state.selectionBBoxXMaxValue } }}
+                                               onChange={(event) => {
+                                                   this.setState({selectionBBoxXMin: event.target.value});
+                                               }}
+                                    />
+                                    <TextField style={{minWidth: 150}}
+                                               className="bbox-selector"
+                                               label={"Upper X Bound"}
+                                               type="number"
+                                               value={this.state.selectionBBoxXMaxValue}
+                                               InputProps={{ inputProps: { min: this.state.selectionBBoxXMinValue, max: this.state.selectionBBoxXMax } }}
+                                               onChange={(event) => {
+                                                   this.setState({selectionBBoxXMax: event.target.value});
+                                               }}
+                                    />
+                                </Stack>
+                                <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="center">
+                                    <TextField style={{minWidth: 150}}
+                                               className="bbox-selector"
+                                               label={"Lower Y Bound"}
+                                               type="number"
+                                               value={this.state.selectionBBoxYMinValue}
+                                               InputProps={{ inputProps: { min: this.state.selectionBBoxYMin, max: this.state.selectionBBoxYMaxValue } }}
+                                               onChange={(event) => {
+                                                   this.setState({selectionBBoxYMin: event.target.value});
+                                               }}
+                                    />
+                                    <TextField style={{minWidth: 150}}
+                                               className="bbox-selector"
+                                               label={"Upper Y Bound"}
+                                               type="number"
+                                               value={this.state.selectionBBoxYMaxValue}
+                                               InputProps={{ inputProps: { min: this.state.selectionBBoxYMinValue, max: this.state.selectionBBoxYMax } }}
+                                               onChange={(event) => {
+                                                   this.setState({selectionBBoxYMax: event.target.value});
+                                               }}
+                                    />
+                                </Stack>
                                 <div className={"user-controls-spacing-div"}>
                                     <p></p>
                                 </div>
