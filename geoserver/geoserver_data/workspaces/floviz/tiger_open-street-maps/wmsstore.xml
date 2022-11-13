@@ -1,0 +1,18 @@
+<wmsStore>
+  <id>WMSStoreInfoImpl--676b791c:1846850ede7:-71db</id>
+  <name>tiger_open-street-maps</name>
+  <type>WMS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-4742b9d2:183f57510e6:-7ffe</id>
+  </workspace>
+  <metadata>
+    <entry key="useConnectionPooling">true</entry>
+  </metadata>
+  <__default>false</__default>
+  <dateCreated>2022-11-11 20:47:17.644 UTC</dateCreated>
+  <capabilitiesURL>https://tigerweb.geo.census.gov/arcgis/services/TIGERweb/tigerWMS_Current/MapServer/WMSServer</capabilitiesURL>
+  <maxConnections>6</maxConnections>
+  <readTimeout>60</readTimeout>
+  <connectTimeout>30</connectTimeout>
+</wmsStore>

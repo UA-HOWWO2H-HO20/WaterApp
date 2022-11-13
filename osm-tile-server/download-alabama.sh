@@ -1,0 +1,1 @@
+http://download.geofabrik.de/north-america/us/alabama-latest.osm.pbf > alabama-latest.osm.pbf

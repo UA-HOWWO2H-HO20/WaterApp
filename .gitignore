@@ -1,0 +1,5 @@
+.env
+certbot/
+osm-tile-server/data/
+# geoserver/geoserver_data/*
+# !geoserver/geoserver_data/data/

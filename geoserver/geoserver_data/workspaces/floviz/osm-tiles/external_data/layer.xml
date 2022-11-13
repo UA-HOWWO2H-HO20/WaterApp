@@ -1,0 +1,16 @@
+<layer>
+  <name>external_data</name>
+  <id>LayerInfoImpl--32609f8e:1846ac35a36:-3cbf</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--32609f8e:1846ac35a36:-3cc0</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-11-12 07:36:59.393 UTC</dateCreated>
+</layer>
