@@ -25,7 +25,7 @@ class ServerRequester
     }
 
     // Helper to clean up URI creation
-    static getURIWithParams(hostname, imageFormat, layer, srs, width, height, bbox, time) {
+    static getURIWithParams(hostname, imageFormat, namespace, layers, srs, width, height, bbox, time) {
         try {
             let uri = `${hostname.toString()}?SERVICE=WMS`;
             uri = uri + `&VERSION=1.1.1`;
@@ -33,13 +33,20 @@ class ServerRequester
             uri = uri + `&FORMAT=${encodeURIComponent(imageFormat.toString())}`;
             uri = uri + `&TRANSPARENT=true`;
             uri = uri + `&STYLES`;
-            uri = uri + `&LAYERS=${encodeURIComponent(layer)}`;
+
+            let layerNames = `&LAYERS=`;
+            for(let layer of layers) {
+                layerNames = layerNames + encodeURIComponent(`${namespace}` + layer.toString()) + ',';
+            }
+            layerNames = layerNames.slice(0, -1);
+            uri = uri + layerNames;
+
             uri = uri + `&exceptions=application%2Fvnd.ogc.se_inimage`;
             uri = uri + `&SRS=${encodeURIComponent(srs)}`;
             uri = uri + `&WIDTH=${width.toString()}`;
             uri = uri + `&HEIGHT=${height.toString()}`;
             uri = uri + `&BBOX=${bbox.toString()}`;
-            uri = uri + `&time=${new Date(time).toISOString()}`;
+            uri = time !== undefined ? uri + `&time=${new Date(time).toISOString()}` : uri;
 
             return uri;
         } catch(err) {
@@ -166,10 +173,13 @@ class ServerRequester
                             const parsedTimes = times.toString().split(",");
                             newLayerObject.start_date = new Date(parsedTimes[0]).toString();
                             newLayerObject.end_date = new Date(parsedTimes[parsedTimes.length - 1]).toString();
+                            newLayerObject.has_start_and_end = true;
                         } else {
-                            // newLayerObject.start_date = "N/A";
-                            // newLayerObject.end_date = "N/A";
-                            continue;
+
+                            newLayerObject.start_date = 'N/A';
+                            newLayerObject.end_date = 'N/A';
+                            newLayerObject.raw_times = '';
+                            newLayerObject.has_start_and_end = false;
                         }
 
                         layerObjects.push(newLayerObject);
@@ -187,7 +197,7 @@ class ServerRequester
     // Function that returns URLS to images based on an ID query. The MetaDataSidebar will post events
     // with the id number assigned to a row, and the purpose of this function is to return URLs of images
     // associated with those ids.
-    getImageURLsFromSelection(ids, imageMetadata, intervalMultiplier, intervalPeriod, startDate, endDate, useAllDates) {
+    getImageURLsFromSelection(ids, imageMetadata, intervalMultiplier, intervalPeriod, startDate, endDate, useStartAndEndDate, useAllDates) {
         // If using all frames, load them
         // Otherwise, we will load them as we parse the layers
         let frameDateTimes = [];
@@ -250,7 +260,7 @@ class ServerRequester
                     srsSpecs.push(layer.srs);
 
                     // If we are using all available times, load that from the layer
-                    if(useAllDates) {
+                    if(useAllDates && useStartAndEndDate) {
                         let rawTimes = layer.raw_times.split(',');
                         rawTimes.forEach((t) => {
                             frameDateTimes.push(new Date(t).toISOString());
@@ -279,21 +289,43 @@ class ServerRequester
         yMin = Math.round((parseFloat(yMin) + Number.EPSILON) * 100) / 100;
         yMax = Math.round((parseFloat(yMax) + Number.EPSILON) * 100) / 100;
 
+        // Assert that every image selected uses the same SRS format
+        let srsValid = true;
+        for(let i = 0; i < layerNames.length; i++) {
+            if(srsSpecs[i] !== srsSpecs[0])
+                srsValid = false;
+        }
+
+        if(!srsValid) {
+            console.log('Tried to combine layers with different SRS projection formats! Can\'t do that');
+            return [`https://via.placeholder.com/${this.imageWidth}x${this.imageHeight}.jpeg?text=Bad request! Selected layers have different SRS projection formats`];
+        }
+
         // Build list of URLs
         let createdURLs = [];
-        for(let i = 0; i < layerNames.length; i++) {
-            const layerName = layerNames[i];
-            const layerSRS = srsSpecs[i];
+        const layerSRS = srsSpecs[0];
 
+        if(useStartAndEndDate)
+        {
             for(let j = 0; j < frameDateTimes.length; j++) {
                 // Encode the bounding box
                 const bbox = encodeURIComponent(`${xMin},${yMin},${xMax},${yMax}`);
 
                 // Build the request
-                const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, this.namespace + layerName, layerSRS, this.imageWidth, this.imageHeight, bbox, frameDateTimes[j]);
+                const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, this.namespace, layerNames, layerSRS, this.imageWidth, this.imageHeight, bbox, frameDateTimes[j]);
 
                 createdURLs.push(URL);
             }
+        }
+        else
+        {
+            // Encode the bounding box
+            const bbox = encodeURIComponent(`${xMin},${yMin},${xMax},${yMax}`);
+
+            // Build the request
+            const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, this.namespace, layerNames, layerSRS, this.imageWidth, this.imageHeight, bbox, undefined);
+
+            createdURLs.push(URL);
         }
 
         return createdURLs;

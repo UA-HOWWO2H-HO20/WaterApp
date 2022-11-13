@@ -30,6 +30,7 @@ class ImageFrame extends React.Component {
             imagesLoaded: false,
             inOverlayRefresh: false,
             imageMetadata: [],
+            useStartAndEndDate: true,
             selectionStartDate: new Date(),
             selectionEndDate: new Date(),
             selectionBBoxXMin: 0.0,
@@ -250,13 +251,11 @@ class ImageFrame extends React.Component {
 
     // Requests new data from the server when the fetch button is pressed
     handleOverlayButtonClick() {
-        console.log('in request processor')
-
         // Start the call to lock the button from being pressed
         this.setState({inRefresh: true});
 
         // Load the new image sources
-        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, this.state.timeStepValue, this.state.timeStepPeriod, this.state.startDateValue, this.state.endDateValue, this.state.useAllImageFrames);
+        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, this.state.timeStepValue, this.state.timeStepPeriod, this.state.startDateValue, this.state.endDateValue, this.state.useStartAndEndDate, this.state.useAllImageFrames);
 
         // Load the images and re-render
         this.loadImages();
@@ -278,8 +277,8 @@ class ImageFrame extends React.Component {
         let xMin = 0, yMin = 0, xMax = 0, yMax = 0;
         for(const layer of metadata) {
             if(layer.id === initialLayerToShow) {
-                startDate = new Date(layer.start_date);
-                endDate = new Date(layer.end_date);
+                startDate = layer.start_date === 'N/A' ? 'N/A' : new Date(layer.start_date);
+                endDate = layer.end_date === 'N/A' ? 'N/A' : new Date(layer.end_date);
                 xMin = layer.bbox_xmin === 'N/A' ? 0.0 : layer.bbox_xmin;
                 xMax = layer.bbox_xmax === 'N/A' ? 0.0 : layer.bbox_xmax;
                 yMin = layer.bbox_ymin === 'N/A' ? 0.0 : layer.bbox_ymin;
@@ -290,13 +289,17 @@ class ImageFrame extends React.Component {
         console.log(`Start: ${startDate}`);
         console.log(`End: ${endDate}`);
 
+        const useStartAndEndDate = startDate !== 'N/A' && endDate !== 'N/A';
+
         // Update the initial state variables
-        this.setState({inRefresh: true,
+        this.setState({
+            inRefresh: true,
             useAllImageFrames: true,
             selectedOverlayRows: selectedRows,
             selectionStartDate: startDate,
             startDateValue: startDate,
             selectionEndDate: endDate,
+            useStartAndEndDate: useStartAndEndDate,
             endDateValue: endDate,
             selectionBBoxXMin: xMin,
             selectionBBoxXMax: xMax,
@@ -310,7 +313,7 @@ class ImageFrame extends React.Component {
 
         // Run the render
         // Note: have to use constants or initialized values for this because the setState method is so slow
-        this.imageSources = this.requester.getImageURLsFromSelection(selectedRows, metadata, 1, 1, startDate, endDate, true);
+        this.imageSources = this.requester.getImageURLsFromSelection(selectedRows, metadata, 1, 1, startDate, endDate, useStartAndEndDate, true);
 
         // Load the images and re-render
         this.loadImages();
@@ -370,6 +373,15 @@ class ImageFrame extends React.Component {
             if(item.bbox_ymax !== 'N/A' && item.bbox_ymax > maxY)
                 maxY = item.bbox_ymax
         });
+
+        if(minX < -180.0)
+            minX = -180.0
+        if(maxX > 180.0)
+            maxX = 180.0
+        if(minY < -90.0)
+            minY = 90.0
+        if(maxY > 90.0)
+            maxY = 90.0
 
         this.setState({ selectionStartDate: maxStartTime,
             selectionEndDate: minEndTime,
@@ -473,6 +485,7 @@ class ImageFrame extends React.Component {
                                     <DateTimePicker
                                         label={"Start"}
                                         renderInput={(params) => <TextField {...params} />}
+                                        disabled={!this.state.useStartAndEndDate}
                                         value={this.state.startDateValue}
                                         onChange={(value) => {
                                             this.setState({startDateValue: value});
@@ -481,6 +494,7 @@ class ImageFrame extends React.Component {
                                     <DateTimePicker
                                         label={"End"}
                                         renderInput={(params) => <TextField {...params} />}
+                                        disabled={!this.state.useStartAndEndDate}
                                         value={this.state.endDateValue}
                                         onChange={(value) => {
                                             this.setState({endDateValue: value});
