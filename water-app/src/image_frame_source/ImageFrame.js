@@ -97,6 +97,9 @@ class ImageFrame extends React.Component {
         // Original image sources for initial animation
         this.imageSources = [];
 
+        // Cached image objects
+        this.cachedImageObjects = [];
+
         // Create a server requester object
         this.requester = new ServerRequester();
 
@@ -121,6 +124,8 @@ class ImageFrame extends React.Component {
     
     // Helper to request the images from the backend server and update the state with their URLS
     loadImages() {
+        this.cachedImageObjects = [];
+
         Promise.all(
             this.imageSources.map(this.cacheImage)
         ).then(() => {
@@ -135,9 +140,11 @@ class ImageFrame extends React.Component {
     cacheImage(path) {
         return new Promise((resolve, reject) => {
             const img = new Image();
-            img.onload = () => resolve(path);
+            img.onload = () => {
+                this.cachedImageObjects.push(img);
+                resolve(path);
+            }
             img.onerror = () => reject();
-
             img.src = path;
         });
     }
@@ -153,8 +160,15 @@ class ImageFrame extends React.Component {
         canvas.height = window.innerHeight;
 
         // Create the image
-        let image = new Image();
-        image.src = this.imageSources.at(imageIndex);
+        // let image = new Image();
+        // image.src = this.imageSources.at(imageIndex);
+        let image = this.cachedImageObjects.at(imageIndex);
+
+        if(!image)
+        {
+            console.log(`Failed to render image: ${this.imageSources.at(imageIndex)}`)
+            return new Promise((r) => {r()});
+        }
 
         // Calculate image scaling
         const horizontalRatio = canvas.width  / image.width;
