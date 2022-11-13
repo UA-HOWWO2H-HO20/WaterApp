@@ -344,10 +344,10 @@ class ImageFrame extends React.Component {
         });
 
         // Load the bounding box values
-        let minX = 0.0;
-        let maxX = 0.0;
-        let minY = 0.0;
-        let maxY = 0.0;
+        let minX = Number.MAX_SAFE_INTEGER;
+        let maxX = Number.MIN_SAFE_INTEGER;
+        let minY = Number.MAX_SAFE_INTEGER;
+        let maxY = Number.MIN_SAFE_INTEGER;
 
         data.forEach((index) => {
             let item;
