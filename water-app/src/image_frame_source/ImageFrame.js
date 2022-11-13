@@ -412,7 +412,7 @@ class ImageFrame extends React.Component {
         }
         else
         {
-            overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick().then(); }}>Fetch Data</Button>;
+            overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick(); }}>Fetch Data</Button>;
         }
 
         return (
