@@ -157,10 +157,15 @@ class ImageFrame extends React.Component {
 
         // Create the image
         const object = this.imageSources.at(imageIndex);
+
+        if(!object) {
+            console.log(`Failed to locate imageSources object: ${imageIndex}`)
+            return new Promise((r) => {r()});
+        }
+
         const image = object.imageObject;
 
-        if(!image)
-        {
+        if(!image) {
             console.log(`Failed to render image: ${this.imageSources.at(imageIndex)}`)
             return new Promise((r) => {r()});
         }
@@ -192,7 +197,7 @@ class ImageFrame extends React.Component {
         else {
             textToDisplay = '';
         }
-        
+
         context.fillText(textToDisplay, 10, 50);
 
         // Probably not needed, but making this async helps with the displayData function
