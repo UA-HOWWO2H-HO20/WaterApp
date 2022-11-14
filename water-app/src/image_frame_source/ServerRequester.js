@@ -261,9 +261,16 @@ class ServerRequester
 
                     // If we are using all available times, load that from the layer
                     if(useAllDates && useStartAndEndDate) {
+                        // Skip rows with no start and end
                         let rawTimes = layer.raw_times.split(',');
                         rawTimes.forEach((t) => {
-                            frameDateTimes.push(new Date(t).toISOString());
+                            try {
+                                if(t !== 'N/A') {
+                                    frameDateTimes.push(new Date(t).toISOString());
+                                }
+                            } catch (e) {
+                                console.log(`Tried to parse invalid date using all dates: \"${t}\"`);
+                            }
                         });
                     }
 

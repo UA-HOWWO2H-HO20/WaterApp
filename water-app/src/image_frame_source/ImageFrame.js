@@ -161,8 +161,6 @@ class ImageFrame extends React.Component {
         canvas.height = window.innerHeight;
 
         // Create the image
-        // let image = new Image();
-        // image.src = this.imageSources.at(imageIndex);
         let image = this.cachedImageObjects.at(imageIndex);
 
         if(!image)
@@ -328,6 +326,8 @@ class ImageFrame extends React.Component {
         let maxStartTime = new Date(0);
         let minEndTime = new Date();
 
+        let useStartAndEndDate = false;
+
         data.forEach((index) => {
             let item;
 
@@ -340,11 +340,19 @@ class ImageFrame extends React.Component {
                 }
             }
 
-            if(new Date(item.start_date) > maxStartTime)
+            if(item.start_date !== 'N/A' && item.end_date !== 'N/A')
+                useStartAndEndDate = true;
+
+            if(item.start_date !== 'N/A' && new Date(item.start_date) > maxStartTime)
                 maxStartTime = new Date(item.start_date);
-            if(new Date(item.end_date) < minEndTime)
+            if(item.end_date !== 'N/A' && new Date(item.end_date) < minEndTime)
                 minEndTime = new Date(item.end_date);
         });
+
+        if(!useStartAndEndDate) {
+            maxStartTime = 'N/A';
+            minEndTime = 'N/A';
+        }
 
         // Load the bounding box values
         let minX = Number.MAX_SAFE_INTEGER;
@@ -383,10 +391,12 @@ class ImageFrame extends React.Component {
         if(maxY > 90.0)
             maxY = 90.0
 
-        this.setState({ selectionStartDate: maxStartTime,
+        this.setState({
+            selectionStartDate: maxStartTime,
             selectionEndDate: minEndTime,
             startDateValue: maxStartTime,
             endDateValue: minEndTime,
+            useStartAndEndDate: useStartAndEndDate,
             selectionBBoxXMin: minX,
             selectionBBoxXMax: maxX,
             selectionBBoxYMin: minY,
