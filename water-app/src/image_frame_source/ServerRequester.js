@@ -295,7 +295,7 @@ class ServerRequester
         }
 
         // Build list of URLs
-        let createdURLs = [];
+        let createdObjects = [];
         const layerSRS = srsSpecs[0];
 
         if(useStartAndEndDate)
@@ -307,7 +307,14 @@ class ServerRequester
                 // Build the request
                 const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, this.namespace, layerNames, layerSRS, this.imageWidth, this.imageHeight, bbox, frameDateTimes[j]);
 
-                createdURLs.push(URL);
+                // Create the object
+                let newObject = {};
+                newObject.url = URL;
+                newObject.timestamp = new Date(frameDateTimes[j]).toISOString();
+                newObject.imageObject = new Image();
+                newObject.imageObject.src = `https://via.placeholder.com/${this.imageWidth}x${this.imageHeight}.jpeg?text=Placeholder for ${URL}`;
+
+                createdObjects.push(newObject);
             }
         }
         else
@@ -318,10 +325,17 @@ class ServerRequester
             // Build the request
             const URL = ServerRequester.getURIWithParams(this.hostName, this.imageFormat, this.namespace, layerNames, layerSRS, this.imageWidth, this.imageHeight, bbox, undefined);
 
-            createdURLs.push(URL);
+            // Create the object
+            let newObject = {};
+            newObject.url = URL;
+            newObject.timestamp = '';
+            newObject.imageObject = new Image();
+            newObject.imageObject.src = `https://via.placeholder.com/${this.imageWidth}x${this.imageHeight}.jpeg?text=Placeholder for ${URL}`;
+
+            createdObjects.push(newObject);
         }
 
-        return createdURLs;
+        return createdObjects;
     }
 }
 

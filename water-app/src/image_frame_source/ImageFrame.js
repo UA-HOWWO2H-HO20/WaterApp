@@ -98,9 +98,6 @@ class ImageFrame extends React.Component {
         // Original image sources for initial animation
         this.imageSources = [];
 
-        // Cached image objects
-        this.cachedImageObjects = [];
-
         // Create a server requester object
         this.requester = new ServerRequester();
 
@@ -125,8 +122,6 @@ class ImageFrame extends React.Component {
     
     // Helper to request the images from the backend server and update the state with their URLS
     loadImages() {
-        this.cachedImageObjects = [];
-
         Promise.all(
             this.imageSources.map(this.cacheImage)
         ).then(() => {
@@ -138,15 +133,15 @@ class ImageFrame extends React.Component {
     }
 
     // Helper to cache images in the browser, which speeds up loading time
-    cacheImage(path) {
+    cacheImage(object) {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
-                this.cachedImageObjects.push(img);
-                resolve(path);
+                resolve(object);
             }
             img.onerror = () => reject();
-            img.src = path;
+            img.src = object.url;
+            object.imageObject = img;
         });
     }
 
@@ -161,7 +156,8 @@ class ImageFrame extends React.Component {
         canvas.height = window.innerHeight;
 
         // Create the image
-        let image = this.cachedImageObjects.at(imageIndex);
+        const object = this.imageSources.at(imageIndex);
+        const image = object.imageObject;
 
         if(!image)
         {
@@ -181,6 +177,23 @@ class ImageFrame extends React.Component {
         // Draw the image
         context.clearRect(0,0, canvas.width, canvas.height);
         context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
+
+        // Draw the current date text
+        context.font = '24px sans-serif';
+
+        let textToDisplay = '';
+        if(object.timestamp.length > 0) {
+            try {
+                textToDisplay = `${new Date(object.timestamp).toDateString()} ${new Date(object.timestamp).toLocaleTimeString()}`;
+            } catch(err) {
+                textToDisplay = '';
+            }
+        }
+        else {
+            textToDisplay = '';
+        }
+        
+        context.fillText(textToDisplay, 10, 50);
 
         // Probably not needed, but making this async helps with the displayData function
         return new Promise((r) => {r()});
