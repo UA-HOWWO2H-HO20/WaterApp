@@ -37,6 +37,10 @@ class ImageFrame extends React.Component {
             selectionBBoxXMax: 180.0,
             selectionBBoxYMin: -90.0,
             selectionBBoxYMax: 90.0,
+            selectionBBoxXMinError: false,
+            selectionBBoxXMaxError: false,
+            selectionBBoxYMinError: false,
+            selectionBBoxYMaxError: false,
             selectionBBoxXMinValue: -180.0,
             selectionBBoxXMaxValue: 180.0,
             selectionBBoxYMinValue: -90.0,
@@ -656,20 +660,26 @@ class ImageFrame extends React.Component {
                                                className="bbox-selector"
                                                label={"Lower X Bound"}
                                                type="number"
-                                               error={this.state.selectionBBoxXMinValue < this.state.selectionBBoxXMin || this.state.selectionBBoxXMinValue > this.state.selectionBBoxXMaxValue}
+                                               error={this.state.selectionBBoxXMinError}
                                                value={this.state.selectionBBoxXMinValue}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxXMinValue: event.target.value});
+                                                   this.setState({
+                                                       selectionBBoxXMinValue: event.target.value,
+                                                       selectionBBoxXMinError: (event.target.value < (this.state.selectionBBoxXMin - 0.0001) || event.target.value > this.state.selectionBBoxXMaxValue)
+                                                   });
                                                }}
                                     />
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Upper X Bound"}
                                                type="number"
-                                               error={this.state.selectionBBoxXMaxValue > this.state.selectionBBoxXMax || this.state.selectionBBoxXMaxValue < this.state.selectionBBoxXMinValue}
+                                               error={this.state.selectionBBoxXMaxError}
                                                value={this.state.selectionBBoxXMaxValue}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxXMaxValue: event.target.value});
+                                                   this.setState({
+                                                       selectionBBoxXMaxValue: event.target.value,
+                                                       selectionBBoxXMaxError: (event.target.value > (this.state.selectionBBoxXMax + 0.0001) || event.target.value < this.state.selectionBBoxXMinValue)
+                                                   });
                                                }}
                                     />
                                 </Stack>
@@ -685,20 +695,26 @@ class ImageFrame extends React.Component {
                                                className="bbox-selector"
                                                label={"Lower Y Bound"}
                                                type="number"
-                                               error={this.state.selectionBBoxYMinValue < this.state.selectionBBoxYMin || this.state.selectionBBoxYMinValue > this.state.selectionBBoxYMaxValue}
+                                               error={this.state.selectionBBoxYMinError}
                                                value={this.state.selectionBBoxYMinValue}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxYMinValue: event.target.value});
+                                                   this.setState({
+                                                       selectionBBoxYMinValue: event.target.value,
+                                                       selectionBBoxYMinError: (event.target.value < (this.state.selectionBBoxYMin - 0.0001) || event.target.value > this.state.selectionBBoxYMaxValue)
+                                                   });
                                                }}
                                     />
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Upper Y Bound"}
                                                type="number"
-                                               error={this.state.selectionBBoxYMaxValue > this.state.selectionBBoxYMax || this.state.selectionBBoxYMaxValue < this.state.selectionBBoxYMinValue}
+                                               error={this.state.selectionBBoxYMaxError}
                                                value={this.state.selectionBBoxYMaxValue}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxYMaxValue: event.target.value});
+                                                   this.setState({
+                                                       selectionBBoxYMaxValue: event.target.value,
+                                                       selectionBBoxYMaxError: (event.target.value > (this.state.selectionBBoxYMax + 0.0001) || event.target.value < this.state.selectionBBoxYMinValue)
+                                                   });
                                                }}
                                     />
                                 </Stack>
