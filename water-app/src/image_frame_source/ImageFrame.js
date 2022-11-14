@@ -33,14 +33,14 @@ class ImageFrame extends React.Component {
             useStartAndEndDate: true,
             selectionStartDate: new Date(),
             selectionEndDate: new Date(),
-            selectionBBoxXMin: 0.0,
-            selectionBBoxXMax: 0.0,
-            selectionBBoxYMin: 0.0,
-            selectionBBoxYMax: 0.0,
-            selectionBBoxXMinValue: 0.0,
-            selectionBBoxXMaxValue: 0.0,
-            selectionBBoxYMinValue: 0.0,
-            selectionBBoxYMaxValue: 0.0,
+            selectionBBoxXMin: -180.0,
+            selectionBBoxXMax: 180.0,
+            selectionBBoxYMin: -90.0,
+            selectionBBoxYMax: 90.0,
+            selectionBBoxXMinValue: -180.0,
+            selectionBBoxXMaxValue: 180.0,
+            selectionBBoxYMinValue: -90.0,
+            selectionBBoxYMaxValue: 90.0,
             startDateValue: new Date(),
             endDateValue: new Date(),
             playbackFPS: 2,
@@ -253,7 +253,18 @@ class ImageFrame extends React.Component {
         this.setState({inRefresh: true});
 
         // Load the new image sources
-        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, this.state.timeStepValue, this.state.timeStepPeriod, this.state.startDateValue, this.state.endDateValue, this.state.useStartAndEndDate, this.state.useAllImageFrames);
+        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows,
+                                                                     this.state.imageMetadata,
+                                                                     this.state.timeStepValue,
+                                                                     this.state.timeStepPeriod,
+                                                                     this.state.startDateValue,
+                                                                     this.state.endDateValue,
+                                                                     this.state.useStartAndEndDate,
+                                                                     this.state.useAllImageFrames,
+                                                                     this.state.selectionBBoxXMinValue,
+                                                                     this.state.selectionBBoxXMaxValue,
+                                                                     this.state.selectionBBoxYMinValue,
+                                                                     this.state.selectionBBoxYMaxValue);
 
         // Load the images and re-render
         this.loadImages();
@@ -284,9 +295,6 @@ class ImageFrame extends React.Component {
             }
         }
 
-        console.log(`Start: ${startDate}`);
-        console.log(`End: ${endDate}`);
-
         const useStartAndEndDate = startDate !== 'N/A' && endDate !== 'N/A';
 
         // Update the initial state variables
@@ -311,7 +319,18 @@ class ImageFrame extends React.Component {
 
         // Run the render
         // Note: have to use constants or initialized values for this because the setState method is so slow
-        this.imageSources = this.requester.getImageURLsFromSelection(selectedRows, metadata, 1, 1, startDate, endDate, useStartAndEndDate, true);
+        this.imageSources = this.requester.getImageURLsFromSelection(selectedRows,
+            metadata,
+            1,
+            1,
+            startDate,
+            endDate,
+            useStartAndEndDate,
+            true,
+            this.state.selectionBBoxXMinValue,
+            this.state.selectionBBoxXMaxValue,
+            this.state.selectionBBoxYMinValue,
+            this.state.selectionBBoxYMaxValue);
 
         // Load the images and re-render
         this.loadImages();
@@ -355,10 +374,10 @@ class ImageFrame extends React.Component {
         }
 
         // Load the bounding box values
-        let minX = Number.MAX_SAFE_INTEGER;
-        let maxX = Number.MIN_SAFE_INTEGER;
-        let minY = Number.MAX_SAFE_INTEGER;
-        let maxY = Number.MIN_SAFE_INTEGER;
+        let minX = -180.0;
+        let maxX = 180.0;
+        let minY = -90.0;
+        let maxY = 90.0;
 
         data.forEach((index) => {
             let item;
@@ -372,13 +391,13 @@ class ImageFrame extends React.Component {
                 }
             }
 
-            if(item.bbox_xmin !== 'N/A' && item.bbox_xmin < minX)
+            if(item.bbox_xmin !== 'N/A' && item.bbox_xmin > minX)
                 minX = item.bbox_xmin
-            if(item.bbox_xmax !== 'N/A' && item.bbox_xmax > maxX)
+            if(item.bbox_xmax !== 'N/A' && item.bbox_xmax < maxX)
                 maxX = item.bbox_xmax
-            if(item.bbox_ymin !== 'N/A' && item.bbox_ymin < minY)
+            if(item.bbox_ymin !== 'N/A' && item.bbox_ymin > minY)
                 minY = item.bbox_ymin
-            if(item.bbox_ymax !== 'N/A' && item.bbox_ymax > maxY)
+            if(item.bbox_ymax !== 'N/A' && item.bbox_ymax < maxY)
                 maxY = item.bbox_ymax
         });
 
@@ -493,7 +512,7 @@ class ImageFrame extends React.Component {
                             <Stack sx={{ height: '87vh', width: '20vw' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DateTimePicker
-                                        label={"Start"}
+                                        label={"Start date"}
                                         renderInput={(params) => <TextField {...params} />}
                                         disabled={!this.state.useStartAndEndDate}
                                         value={this.state.startDateValue}
@@ -502,7 +521,7 @@ class ImageFrame extends React.Component {
                                         }}
                                     />
                                     <DateTimePicker
-                                        label={"End"}
+                                        label={"End date"}
                                         renderInput={(params) => <TextField {...params} />}
                                         disabled={!this.state.useStartAndEndDate}
                                         value={this.state.endDateValue}
@@ -607,47 +626,61 @@ class ImageFrame extends React.Component {
                                 <div className={"user-controls-spacing-div"}>
                                     <p></p>
                                 </div>
-                                <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="center">
+                                <Stack direction="row"
+                                       spacing={2}
+                                       justifyContent="space-evenly"
+                                       alignItems="center"
+                                       component="form"
+                                       sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}}
+                                       noValidate
+                                       autoComplete="off">
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Lower X Bound"}
                                                type="number"
+                                               error={this.state.selectionBBoxXMinValue < this.state.selectionBBoxXMin || this.state.selectionBBoxXMinValue > this.state.selectionBBoxXMaxValue}
                                                value={this.state.selectionBBoxXMinValue}
-                                               InputProps={{ inputProps: { min: this.state.selectionBBoxXMin, max: this.state.selectionBBoxXMaxValue } }}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxXMin: event.target.value});
+                                                   this.setState({selectionBBoxXMinValue: event.target.value});
                                                }}
                                     />
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Upper X Bound"}
                                                type="number"
+                                               error={this.state.selectionBBoxXMaxValue > this.state.selectionBBoxXMax || this.state.selectionBBoxXMaxValue < this.state.selectionBBoxXMinValue}
                                                value={this.state.selectionBBoxXMaxValue}
-                                               InputProps={{ inputProps: { min: this.state.selectionBBoxXMinValue, max: this.state.selectionBBoxXMax } }}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxXMax: event.target.value});
+                                                   this.setState({selectionBBoxXMaxValue: event.target.value});
                                                }}
                                     />
                                 </Stack>
-                                <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="center">
+                                <Stack direction="row"
+                                       spacing={2}
+                                       justifyContent="space-evenly"
+                                       alignItems="center"
+                                       component="form"
+                                       sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}}
+                                       noValidate
+                                       autoComplete="off">
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Lower Y Bound"}
                                                type="number"
+                                               error={this.state.selectionBBoxYMinValue < this.state.selectionBBoxYMin || this.state.selectionBBoxYMinValue > this.state.selectionBBoxYMaxValue}
                                                value={this.state.selectionBBoxYMinValue}
-                                               InputProps={{ inputProps: { min: this.state.selectionBBoxYMin, max: this.state.selectionBBoxYMaxValue } }}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxYMin: event.target.value});
+                                                   this.setState({selectionBBoxYMinValue: event.target.value});
                                                }}
                                     />
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Upper Y Bound"}
                                                type="number"
+                                               error={this.state.selectionBBoxYMaxValue > this.state.selectionBBoxYMax || this.state.selectionBBoxYMaxValue < this.state.selectionBBoxYMinValue}
                                                value={this.state.selectionBBoxYMaxValue}
-                                               InputProps={{ inputProps: { min: this.state.selectionBBoxYMinValue, max: this.state.selectionBBoxYMax } }}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxYMax: event.target.value});
+                                                   this.setState({selectionBBoxYMaxValue: event.target.value});
                                                }}
                                     />
                                 </Stack>

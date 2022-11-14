@@ -197,7 +197,7 @@ class ServerRequester
     // Function that returns URLS to images based on an ID query. The MetaDataSidebar will post events
     // with the id number assigned to a row, and the purpose of this function is to return URLs of images
     // associated with those ids.
-    getImageURLsFromSelection(ids, imageMetadata, intervalMultiplier, intervalPeriod, startDate, endDate, useStartAndEndDate, useAllDates) {
+    getImageURLsFromSelection(ids, imageMetadata, intervalMultiplier, intervalPeriod, startDate, endDate, useStartAndEndDate, useAllDates, bboxXMin, bboxXMax, bboxYMin, bboxYMax) {
         // If using all frames, load them
         // Otherwise, we will load them as we parse the layers
         let frameDateTimes = [];
@@ -244,7 +244,6 @@ class ServerRequester
         }
 
         // Build the minimal bounding box shared between the selected layers
-        let xMin, xMax, yMin, yMax;
         let layerNames = [], srsSpecs = [];
         for(let i = 0; i < ids.length; i++) {
             let id = ids[i];
@@ -273,28 +272,15 @@ class ServerRequester
                             }
                         });
                     }
-
-                    // Update the bounds
-                    if(i === 0) {
-                        xMin = layer.bbox_xmin;
-                        xMax = layer.bbox_xmax;
-                        yMin = layer.bbox_ymin;
-                        yMax = layer.bbox_ymax;
-                    } else {
-                        xMin = Math.max(xMin, layer.bbox_xmin);
-                        xMax = Math.min(xMax, layer.bbox_xmax);
-                        yMin = Math.max(yMin, layer.bbox_ymin);
-                        yMax = Math.min(yMax, layer.bbox_ymax);
-                    }
                 }
             }
         }
 
         // Round the bounding box to 2 decimal places
-        xMin = Math.round((parseFloat(xMin) + Number.EPSILON) * 100) / 100;
-        xMax = Math.round((parseFloat(xMax) + Number.EPSILON) * 100) / 100;
-        yMin = Math.round((parseFloat(yMin) + Number.EPSILON) * 100) / 100;
-        yMax = Math.round((parseFloat(yMax) + Number.EPSILON) * 100) / 100;
+        const xMin = Math.round((parseFloat(bboxXMin.toString()) + Number.EPSILON) * 100) / 100;
+        const xMax = Math.round((parseFloat(bboxXMax.toString()) + Number.EPSILON) * 100) / 100;
+        const yMin = Math.round((parseFloat(bboxYMin.toString()) + Number.EPSILON) * 100) / 100;
+        const yMax = Math.round((parseFloat(bboxYMax.toString()) + Number.EPSILON) * 100) / 100;
 
         // Assert that every image selected uses the same SRS format
         let srsValid = true;
