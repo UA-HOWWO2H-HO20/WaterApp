@@ -1,70 +1,32 @@
-# Getting Started with Create React App
+# WaterApp
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Mission
 
-## Available Scripts
+The goal of the project is to create an app that makes water data easily manipulated and more visually appealing to study and display. Many existing apps focus on weather events and displaying daily data, but our app will focus on trend visualization and be used mainly for research and educational purposes. This data will be sourced from both the client, Alabama Water Institute, and from publicly available APIs.
 
-In the project directory, you can run:
+This project will be considered a success if we can display water data in a way that is easy to understand, coherent, and teaches the users more about the environment. The interface for the app will be a map with various overlays and data points, and allow users to select which data they would like to view. The app will focus on the state of Alabama to begin, and, if the project timeline allows, expand to the entire continental US.
 
-### `npm start`
+## Problems We Are Solving
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This project aims to cover the gap in existing weather apps and research data. Weather apps focus on forecasting rain, snow and storms, and visualizing radar data. There is a plethora of other water-related data collected and processed across the country, though it is mostly limited to research or professional use. This app will allow researchers, students, and the general public to visualize trends and see different water features both currently and through time.
+The app has moved to a more educational and research oriented application that will be used for presentations, conferences, and learning environments. It will be much less accessible and will be mainly a visualization and study tool.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Overview
 
-### `npm test`
+### Website
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**1. Map view:** Users should be presented with a map containing various data about water (Google Maps, OSM, GeoApify, Leaflet)
 
-### `npm run build`
+**2. Data slicing:** Users should be able to pick and choose which data they want presented
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**4. Historical View:** Users should be able to view historical data for the location of their choice, displayed in a user-friendly format
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**5. Calculations:** Users should be able to perform analysis of the presented data to gather things like max water level, min water level, mean water level, etc…
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Backend Services
 
-### `npm run eject`
+**1. Concurrent Databases:** Caching of frequently used data (Geoserver)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**2. Automatic Data Gathering:** Obtain water data automatically (Go/Python)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**3. Hosting:** Host the application using a privately owned server
