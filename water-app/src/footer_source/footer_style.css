@@ -1,6 +1,6 @@
 #water-app-footer {
     width: 100%;
-    background: #404040;
+    background: #737373;
     justify-content: space-between;
     align-items: center;
     z-index: 5;
@@ -8,22 +8,30 @@
 }
 
 .footer-label {
-    font-family: "Courier New", Courier, monospace;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
     font-size: 2vh;
     padding-top: 2vh;
-    padding-bottom: 1vh;
+    padding-bottom: 2vh;
     text-align: center;
     font-weight: bold;
     margin: auto;
-    color: #eee;
+    color: #fffff0;
     text-decoration: none;
     display: block;
+    border-radius: 10px;
 }
 
 .footer-td {
     margin-left: 5vw;
     margin-right: 5vw;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
     vertical-align: bottom;
+    width: 30vw;
+}
+
+.footer-label:hover {
+    background: #656565;
 }
 
 .footer-table {

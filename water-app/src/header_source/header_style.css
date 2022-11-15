@@ -1,6 +1,6 @@
 #water-app-header {
     width: 100%;
-    background: #404040;
+    background: #38b6ff;
     justify-content: space-between;
     align-items: center;
     z-index: 5;
@@ -8,31 +8,32 @@
 }
 
 h1 {
-    font-family: "Courier New", Courier, monospace;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
     font-size: 5vh;
     padding-top: 2vh;
     padding-bottom: 1vh;
-    text-align: center;
+    padding-left: 3vw;
+    text-align: left;
     font-weight: bold;
     margin: auto;
-    color: #eee;
-}
-
-h4 {
-    font-family: "Courier New", Courier, monospace;
-    font-size: 1vh;
-    padding-top: 1vh;
-    text-align: center;
-    color: #202020;
+    color: #fffff0;
+    text-shadow: 3px 3px 5px #444444;
 }
 
 .header-td {
     margin-left: 5vw;
     margin-right: 5vw;
-    vertical-align: bottom;
+    vertical-align: center;
 }
 
 .header-table {
     table-layout: fixed;
     width: 100vw
+}
+
+.header-thumbnail {
+    width: 3vw;
+    height: 3vw;
+    float: right;
+    padding-right: 3vw;
 }

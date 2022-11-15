@@ -1,0 +1,13 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl--69e94f43:183f58863c3:-7fff</id>
+  <name>snow_file_store</name>
+  <type>ImageMosaic</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-4742b9d2:183f57510e6:-7ffe</id>
+  </workspace>
+  <__default>false</__default>
+  <dateCreated>2022-10-20 13:19:52.223 UTC</dateCreated>
+  <dateModified>2022-10-20 13:19:56.881 UTC</dateModified>
+  <url>file:data/floviz/snowLZWdataset</url>
+</coverageStore>

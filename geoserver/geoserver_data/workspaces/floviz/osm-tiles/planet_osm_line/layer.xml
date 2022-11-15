@@ -1,0 +1,17 @@
+<layer>
+  <name>planet_osm_line</name>
+  <id>LayerInfoImpl--3cec06ff:1846aa3f328:2fe</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--3cec06ff:1846aa3f328:2fd</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-11-12 07:03:20.903 UTC</dateCreated>
+  <dateModified>2022-11-12 07:24:06.718 UTC</dateModified>
+</layer>

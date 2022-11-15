@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" service="WPS"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
+             xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0"
+             xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml"
+             xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+             xmlns:xlink="http://www.w3.org/1999/xlink"
+             xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+  <ows:Identifier>gs:DownloadAnimation</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>bbox</ows:Identifier>
+      <wps:Data>
+        <wps:BoundingBoxData crs="EPSG:4326">
+          <ows:LowerCorner>73.3062744140625 28.96820068359375</ows:LowerCorner>
+          <ows:UpperCorner>77.5250244140625 33.14849853515625</ows:UpperCorner>
+        </wps:BoundingBoxData>
+      </wps:Data>
+    </wps:Input>
+    <!-- <wps:Input>
+      <ows:Identifier>decoration</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>formattedTimestamper</wps:LiteralData>
+      </wps:Data>
+    </wps:Input> -->
+    <wps:Input>
+      <ows:Identifier>time</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>2021-06-10T00:00:00.000Z,2021-06-26T00:00:00.000Z,2021-07-12T00:00:00.000Z,2021-07-28T00:00:00.000Z,2021-08-13T00:00:00.000Z,2021-08-29T00:00:00.000Z,2021-09-14T00:00:00.000Z,2021-09-30T00:00:00.000Z,2021-10-16T00:00:00.000Z,2021-11-01T00:00:00.000Z,2021-11-17T00:00:00.000Z,2021-12-03T00:00:00.000Z,2021-12-19T00:00:00.000Z,2022-01-01T00:00:00.000Z,2022-01-17T00:00:00.000Z,2022-02-02T00:00:00.000Z,2022-02-18T00:00:00.000Z,2022-03-06T00:00:00.000Z,2022-03-22T00:00:00.000Z,2022-04-07T00:00:00.000Z,2022-04-23T00:00:00.000Z,2022-05-09T00:00:00.000Z</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>width</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>768</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>height</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>761</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>fps</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>2</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>layer</ows:Identifier>
+      <wps:Data>
+        <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+          <dwn:Layer>
+            <dwn:Name>floviz:NDVI_data</dwn:Name>
+          </dwn:Layer>
+        </wps:ComplexData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+  <wps:ResponseForm>
+    <!-- <wps:RawDataOutput mimeType="video/mp4"> -->
+    <wps:RawDataOutput mimeType="image/gif">
+      <ows:Identifier>result</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>
