@@ -63,6 +63,12 @@ class ImageFrame extends React.Component {
                 width: 160
             },
             {
+                field: 'static',
+                headerName: 'Static?',
+                sortable: false,
+                width: 80
+            },
+            {
                 field: 'start_date',
                 headerName: 'Start Date',
                 sortable: false,
@@ -97,6 +103,12 @@ class ImageFrame extends React.Component {
                 headerName: 'YMax',
                 sortable: false,
                 width: 80
+            },
+            {
+                field: 'srs',
+                headerName: 'Projection (SRS)',
+                sortable: false,
+                width: 160
             }];
 
         // Original image sources for initial animation
@@ -413,24 +425,46 @@ class ImageFrame extends React.Component {
                 }
             }
 
-            if(item.bbox_xmin !== 'N/A' && item.bbox_xmin > minX)
-                minX = item.bbox_xmin
-            if(item.bbox_xmax !== 'N/A' && item.bbox_xmax < maxX)
-                maxX = item.bbox_xmax
-            if(item.bbox_ymin !== 'N/A' && item.bbox_ymin > minY)
-                minY = item.bbox_ymin
-            if(item.bbox_ymax !== 'N/A' && item.bbox_ymax < maxY)
-                maxY = item.bbox_ymax
+            // Check that the item was found
+            if(item.id === undefined) {
+                console.log(`Failed to locate item at index ${index}`);
+            }
+            else {
+                if(item.bbox_xmin !== 'N/A' && parseFloat(item.bbox_xmin) > minX) {
+                    minX = item.bbox_xmin;
+                    // console.log(`Updated x min to ${minX} from layer ${item.title}`)
+                }
+                if(item.bbox_xmax !== 'N/A' && parseFloat(item.bbox_xmax) < maxX) {
+                    maxX = item.bbox_xmax;
+                    // console.log(`Updated x max to ${maxX} from layer ${item.title}`)
+                }
+                if(item.bbox_ymin !== 'N/A' && parseFloat(item.bbox_ymin) > minY) {
+                    minY = item.bbox_ymin;
+                    // console.log(`Updated y min to ${minY} from layer ${item.title}`)
+                }
+                if(item.bbox_ymax !== 'N/A' && parseFloat(item.bbox_ymax) < maxY) {
+                    maxY = item.bbox_ymax ;
+                    // console.log(`Updated y max to ${minY} from layer ${item.title}`)
+                }
+            }
         });
 
-        if(minX < -180.0)
-            minX = -180.0
-        if(maxX > 180.0)
-            maxX = 180.0
-        if(minY < -90.0)
-            minY = 90.0
-        if(maxY > 90.0)
-            maxY = 90.0
+        if(minX < -180.0) {
+            console.log(`Bounding invalid x min: ${minX} to -180.0`);
+            minX = -180.0;
+        }
+        if(maxX > 180.0) {
+            console.log(`Bounding invalid x max: ${maxX} to 180.0`);
+            maxX = 180.0;
+        }
+        if(minY < -90.0) {
+            console.log(`Bounding invalid y min: ${minY} to -90.0`);
+            minY = -90.0;
+        }
+        if(maxY > 90.0) {
+            console.log(`Bounding invalid y max: ${maxY} to 90.0`);
+            maxY = 90.0;
+        }
 
         this.setState({
             selectionStartDate: maxStartTime,
@@ -478,6 +512,31 @@ class ImageFrame extends React.Component {
             overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick(); }}>Fetch Data</Button>;
         }
 
+        // Create a component for the slider
+        let sliderComponent;
+        if(this.state.maxFrame <= 0) {  // True if there is only one image loaded
+            sliderComponent = <div></div>;
+        }
+        else {
+            sliderComponent =
+                <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
+                    <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
+                        {pausePlayIcon}
+                    </SvgIcon>
+                    <Slider
+                        id="image-frame-slider"
+                        aria-label="Image Index"
+                        value={this.state.currentFrame + 1}
+                        valueLabelDisplay="auto"
+                        step={1}
+                        marks
+                        min={this.state.minFrame + 1}
+                        max={this.state.maxFrame + 1}
+                        onChange={(e, val) => { this.handleSliderInput(val); }}
+                    />
+                </Stack>;
+        }
+
         return (
             <div className={"map-container"}>
                 <table className={"map-table"}>
@@ -508,22 +567,7 @@ class ImageFrame extends React.Component {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
-                                                <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
-                                                    {pausePlayIcon}
-                                                </SvgIcon>
-                                                <Slider
-                                                    id="image-frame-slider"
-                                                    aria-label="Image Index"
-                                                    value={this.state.currentFrame + 1}
-                                                    valueLabelDisplay="auto"
-                                                    step={1}
-                                                    marks
-                                                    min={this.state.minFrame + 1}
-                                                    max={this.state.maxFrame + 1}
-                                                    onChange={(e, val) => { this.handleSliderInput(val); }}
-                                                />
-                                            </Stack>
+                                            {sliderComponent}
                                         </td>
                                     </tr>
                                     </tbody>

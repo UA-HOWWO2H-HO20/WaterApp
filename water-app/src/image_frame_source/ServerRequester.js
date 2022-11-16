@@ -174,12 +174,13 @@ class ServerRequester
                             newLayerObject.start_date = new Date(parsedTimes[0]).toString();
                             newLayerObject.end_date = new Date(parsedTimes[parsedTimes.length - 1]).toString();
                             newLayerObject.has_start_and_end = true;
+                            newLayerObject.static = 'No';
                         } else {
-
                             newLayerObject.start_date = 'N/A';
                             newLayerObject.end_date = 'N/A';
                             newLayerObject.raw_times = '';
                             newLayerObject.has_start_and_end = false;
+                            newLayerObject.static = 'Yes';
                         }
 
                         layerObjects.push(newLayerObject);
