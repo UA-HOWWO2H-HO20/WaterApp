@@ -6,11 +6,21 @@
       <sld:FeatureTypeStyle>
         <sld:Rule>
           <sld:Title>gold polygon</sld:Title>
-          <sld:PolygonSymbolizer>
-            <sld:Fill>
-              <sld:CssParameter name="fill">#f8f4f0</sld:CssParameter>
-            </sld:Fill>
-          </sld:PolygonSymbolizer>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsEqualTo>
+                <ogc:PropertyName>place</ogc:PropertyName>
+                <ogc:Literal>county</ogc:Literal>
+              </ogc:PropertyIsEqualTo>
+              <ogc:PropertyIsEqualTo>
+                <ogc:PropertyName>name</ogc:PropertyName>
+                <ogc:Literal>Chattoogaa County</ogc:Literal>
+              </ogc:PropertyIsEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:LineSymbolizer>
+            <sld:Stroke/>
+          </sld:LineSymbolizer>
         </sld:Rule>
         <sld:VendorOption name="ruleEvaluation">first</sld:VendorOption>
       </sld:FeatureTypeStyle>

@@ -53,7 +53,7 @@
         <defaultValue>
           <strategy>MINIMUM</strategy>
         </defaultValue>
-        <nearestMatchEnabled>false</nearestMatchEnabled>
+        <nearestMatchEnabled>true</nearestMatchEnabled>
         <rawNearestMatchEnabled>false</rawNearestMatchEnabled>
       </dimensionInfo>
     </entry>
