@@ -108,7 +108,7 @@ class ImageFrame extends React.Component {
                 field: 'srs',
                 headerName: 'Projection (SRS)',
                 sortable: false,
-                width: 80
+                width: 160
             }];
 
         // Original image sources for initial animation
@@ -430,31 +430,39 @@ class ImageFrame extends React.Component {
                 console.log(`Failed to locate item at index ${index}`);
             }
             else {
-                if(item.bbox_xmin !== 'N/A' && item.bbox_xmin > minX)
+                if(item.bbox_xmin !== 'N/A' && parseFloat(item.bbox_xmin) > minX) {
                     minX = item.bbox_xmin;
-                if(item.bbox_xmax !== 'N/A' && item.bbox_xmax < maxX)
+                    // console.log(`Updated x min to ${minX} from layer ${item.title}`)
+                }
+                if(item.bbox_xmax !== 'N/A' && parseFloat(item.bbox_xmax) < maxX) {
                     maxX = item.bbox_xmax;
-                if(item.bbox_ymin !== 'N/A' && item.bbox_ymin > minY)
+                    // console.log(`Updated x max to ${maxX} from layer ${item.title}`)
+                }
+                if(item.bbox_ymin !== 'N/A' && parseFloat(item.bbox_ymin) > minY) {
                     minY = item.bbox_ymin;
-                if(item.bbox_ymax !== 'N/A' && item.bbox_ymax < maxY)
+                    // console.log(`Updated y min to ${minY} from layer ${item.title}`)
+                }
+                if(item.bbox_ymax !== 'N/A' && parseFloat(item.bbox_ymax) < maxY) {
                     maxY = item.bbox_ymax ;
+                    // console.log(`Updated y max to ${minY} from layer ${item.title}`)
+                }
             }
         });
 
         if(minX < -180.0) {
-            console.log(`Bounding invalid x min: ${minX}`);
+            console.log(`Bounding invalid x min: ${minX} to -180.0`);
             minX = -180.0;
         }
         if(maxX > 180.0) {
-            console.log(`Bounding invalid x max: ${maxX}`);
+            console.log(`Bounding invalid x max: ${maxX} to 180.0`);
             maxX = 180.0;
         }
         if(minY < -90.0) {
-            console.log(`Bounding invalid y min: ${minY}`);
-            minY = 90.0;
+            console.log(`Bounding invalid y min: ${minY} to -90.0`);
+            minY = -90.0;
         }
         if(maxY > 90.0) {
-            console.log(`Bounding invalid y max: ${maxY}`);
+            console.log(`Bounding invalid y max: ${maxY} to 90.0`);
             maxY = 90.0;
         }
 
