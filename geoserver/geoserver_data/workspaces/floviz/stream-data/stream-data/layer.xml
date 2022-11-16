@@ -1,0 +1,17 @@
+<layer>
+  <name>stream-data</name>
+  <id>LayerInfoImpl-384d3ccb:1847d605270:-7ffd</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-37b18cc6:14d5d036d48:-8000</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-384d3ccb:1847d605270:-7ffe</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-11-15 22:23:14.393 UTC</dateCreated>
+  <dateModified>2022-11-16 23:08:33.583 UTC</dateModified>
+</layer>

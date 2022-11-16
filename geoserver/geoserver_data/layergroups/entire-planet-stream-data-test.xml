@@ -1,0 +1,30 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl-7812097:18482b00f42:-7b98</id>
+  <name>entire-planet-stream-data-test</name>
+  <mode>SINGLE</mode>
+  <title>entire-planet-stream-data-test</title>
+  <internationalTitle/>
+  <internationalAbstract/>
+  <publishables>
+    <published type="layerGroup">
+      <id>LayerGroupInfoImpl--32609f8e:1846ac35a36:5e56</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl-384d3ccb:1847d605270:-7ffd</id>
+    </published>
+  </publishables>
+  <styles>
+    <style/>
+    <style>
+      <id>StyleInfoImpl-37b18cc6:14d5d036d48:-8000</id>
+    </style>
+  </styles>
+  <bounds>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-90.0</miny>
+    <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <dateCreated>2022-11-16 23:11:45.588 UTC</dateCreated>
+</layerGroup>
