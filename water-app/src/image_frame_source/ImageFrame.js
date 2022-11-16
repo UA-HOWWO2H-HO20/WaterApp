@@ -30,16 +30,21 @@ class ImageFrame extends React.Component {
             imagesLoaded: false,
             inOverlayRefresh: false,
             imageMetadata: [],
+            useStartAndEndDate: true,
             selectionStartDate: new Date(),
             selectionEndDate: new Date(),
-            selectionBBoxXMin: 0.0,
-            selectionBBoxXMax: 0.0,
-            selectionBBoxYMin: 0.0,
-            selectionBBoxYMax: 0.0,
-            selectionBBoxXMinValue: 0.0,
-            selectionBBoxXMaxValue: 0.0,
-            selectionBBoxYMinValue: 0.0,
-            selectionBBoxYMaxValue: 0.0,
+            selectionBBoxXMin: -180.0,
+            selectionBBoxXMax: 180.0,
+            selectionBBoxYMin: -90.0,
+            selectionBBoxYMax: 90.0,
+            selectionBBoxXMinError: false,
+            selectionBBoxXMaxError: false,
+            selectionBBoxYMinError: false,
+            selectionBBoxYMaxError: false,
+            selectionBBoxXMinValue: -180.0,
+            selectionBBoxXMaxValue: 180.0,
+            selectionBBoxYMinValue: -90.0,
+            selectionBBoxYMaxValue: 90.0,
             startDateValue: new Date(),
             endDateValue: new Date(),
             playbackFPS: 2,
@@ -56,6 +61,12 @@ class ImageFrame extends React.Component {
                 headerName: 'Layer Name',
                 sortable: false,
                 width: 160
+            },
+            {
+                field: 'static',
+                headerName: 'Static?',
+                sortable: false,
+                width: 80
             },
             {
                 field: 'start_date',
@@ -92,13 +103,16 @@ class ImageFrame extends React.Component {
                 headerName: 'YMax',
                 sortable: false,
                 width: 80
+            },
+            {
+                field: 'srs',
+                headerName: 'Projection (SRS)',
+                sortable: false,
+                width: 160
             }];
 
         // Original image sources for initial animation
         this.imageSources = [];
-
-        // Cached image objects
-        this.cachedImageObjects = [];
 
         // Create a server requester object
         this.requester = new ServerRequester();
@@ -124,8 +138,6 @@ class ImageFrame extends React.Component {
     
     // Helper to request the images from the backend server and update the state with their URLS
     loadImages() {
-        this.cachedImageObjects = [];
-
         Promise.all(
             this.imageSources.map(this.cacheImage)
         ).then(() => {
@@ -137,15 +149,15 @@ class ImageFrame extends React.Component {
     }
 
     // Helper to cache images in the browser, which speeds up loading time
-    cacheImage(path) {
+    cacheImage(object) {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
-                this.cachedImageObjects.push(img);
-                resolve(path);
+                resolve(object);
             }
             img.onerror = () => reject();
-            img.src = path;
+            img.src = object.url;
+            object.imageObject = img;
         });
     }
 
@@ -160,12 +172,16 @@ class ImageFrame extends React.Component {
         canvas.height = window.innerHeight;
 
         // Create the image
-        // let image = new Image();
-        // image.src = this.imageSources.at(imageIndex);
-        let image = this.cachedImageObjects.at(imageIndex);
+        const object = this.imageSources.at(imageIndex);
 
-        if(!image)
-        {
+        if(!object) {
+            console.log(`Failed to locate imageSources object: ${imageIndex}`)
+            return new Promise((r) => {r()});
+        }
+
+        const image = object.imageObject;
+
+        if(!image) {
             console.log(`Failed to render image: ${this.imageSources.at(imageIndex)}`)
             return new Promise((r) => {r()});
         }
@@ -182,6 +198,23 @@ class ImageFrame extends React.Component {
         // Draw the image
         context.clearRect(0,0, canvas.width, canvas.height);
         context.drawImage(image, 0,0, image.width, image.height, xShift, yShift, image.width * ratio, image.height * ratio, this);
+
+        // Draw the current date text
+        context.font = '24px sans-serif';
+
+        let textToDisplay = '';
+        if(object.timestamp.length > 0) {
+            try {
+                textToDisplay = `${new Date(object.timestamp).toDateString()} ${new Date(object.timestamp).toLocaleTimeString()}`;
+            } catch(err) {
+                textToDisplay = '';
+            }
+        }
+        else {
+            textToDisplay = '';
+        }
+
+        context.fillText(textToDisplay, 10, 50);
 
         // Probably not needed, but making this async helps with the displayData function
         return new Promise((r) => {r()});
@@ -250,13 +283,22 @@ class ImageFrame extends React.Component {
 
     // Requests new data from the server when the fetch button is pressed
     handleOverlayButtonClick() {
-        console.log('in request processor')
-
         // Start the call to lock the button from being pressed
         this.setState({inRefresh: true});
 
         // Load the new image sources
-        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows, this.state.imageMetadata, this.state.timeStepValue, this.state.timeStepPeriod, this.state.startDateValue, this.state.endDateValue, this.state.useAllImageFrames);
+        this.imageSources = this.requester.getImageURLsFromSelection(this.state.selectedOverlayRows,
+                                                                     this.state.imageMetadata,
+                                                                     this.state.timeStepValue,
+                                                                     this.state.timeStepPeriod,
+                                                                     this.state.startDateValue,
+                                                                     this.state.endDateValue,
+                                                                     this.state.useStartAndEndDate,
+                                                                     this.state.useAllImageFrames,
+                                                                     this.state.selectionBBoxXMinValue,
+                                                                     this.state.selectionBBoxXMaxValue,
+                                                                     this.state.selectionBBoxYMinValue,
+                                                                     this.state.selectionBBoxYMaxValue);
 
         // Load the images and re-render
         this.loadImages();
@@ -278,8 +320,8 @@ class ImageFrame extends React.Component {
         let xMin = 0, yMin = 0, xMax = 0, yMax = 0;
         for(const layer of metadata) {
             if(layer.id === initialLayerToShow) {
-                startDate = new Date(layer.start_date);
-                endDate = new Date(layer.end_date);
+                startDate = layer.start_date === 'N/A' ? 'N/A' : new Date(layer.start_date);
+                endDate = layer.end_date === 'N/A' ? 'N/A' : new Date(layer.end_date);
                 xMin = layer.bbox_xmin === 'N/A' ? 0.0 : layer.bbox_xmin;
                 xMax = layer.bbox_xmax === 'N/A' ? 0.0 : layer.bbox_xmax;
                 yMin = layer.bbox_ymin === 'N/A' ? 0.0 : layer.bbox_ymin;
@@ -287,16 +329,17 @@ class ImageFrame extends React.Component {
             }
         }
 
-        console.log(`Start: ${startDate}`);
-        console.log(`End: ${endDate}`);
+        const useStartAndEndDate = startDate !== 'N/A' && endDate !== 'N/A';
 
         // Update the initial state variables
-        this.setState({inRefresh: true,
+        this.setState({
+            inRefresh: true,
             useAllImageFrames: true,
             selectedOverlayRows: selectedRows,
             selectionStartDate: startDate,
             startDateValue: startDate,
             selectionEndDate: endDate,
+            useStartAndEndDate: useStartAndEndDate,
             endDateValue: endDate,
             selectionBBoxXMin: xMin,
             selectionBBoxXMax: xMax,
@@ -310,7 +353,18 @@ class ImageFrame extends React.Component {
 
         // Run the render
         // Note: have to use constants or initialized values for this because the setState method is so slow
-        this.imageSources = this.requester.getImageURLsFromSelection(selectedRows, metadata, 1, 1, startDate, endDate, true);
+        this.imageSources = this.requester.getImageURLsFromSelection(selectedRows,
+            metadata,
+            1,
+            1,
+            startDate,
+            endDate,
+            useStartAndEndDate,
+            true,
+            this.state.selectionBBoxXMinValue,
+            this.state.selectionBBoxXMaxValue,
+            this.state.selectionBBoxYMinValue,
+            this.state.selectionBBoxYMaxValue);
 
         // Load the images and re-render
         this.loadImages();
@@ -325,6 +379,8 @@ class ImageFrame extends React.Component {
         let maxStartTime = new Date(0);
         let minEndTime = new Date();
 
+        let useStartAndEndDate = false;
+
         data.forEach((index) => {
             let item;
 
@@ -337,17 +393,25 @@ class ImageFrame extends React.Component {
                 }
             }
 
-            if(new Date(item.start_date) > maxStartTime)
+            if(item.start_date !== 'N/A' && item.end_date !== 'N/A')
+                useStartAndEndDate = true;
+
+            if(item.start_date !== 'N/A' && new Date(item.start_date) > maxStartTime)
                 maxStartTime = new Date(item.start_date);
-            if(new Date(item.end_date) < minEndTime)
+            if(item.end_date !== 'N/A' && new Date(item.end_date) < minEndTime)
                 minEndTime = new Date(item.end_date);
         });
 
+        if(!useStartAndEndDate) {
+            maxStartTime = 'N/A';
+            minEndTime = 'N/A';
+        }
+
         // Load the bounding box values
-        let minX = 0.0;
-        let maxX = 0.0;
-        let minY = 0.0;
-        let maxY = 0.0;
+        let minX = -180.0;
+        let maxX = 180.0;
+        let minY = -90.0;
+        let maxY = 90.0;
 
         data.forEach((index) => {
             let item;
@@ -361,20 +425,53 @@ class ImageFrame extends React.Component {
                 }
             }
 
-            if(item.bbox_xmin !== 'N/A' && item.bbox_xmin < minX)
-                minX = item.bbox_xmin
-            if(item.bbox_xmax !== 'N/A' && item.bbox_xmax > maxX)
-                maxX = item.bbox_xmax
-            if(item.bbox_ymin !== 'N/A' && item.bbox_ymin < minY)
-                minY = item.bbox_ymin
-            if(item.bbox_ymax !== 'N/A' && item.bbox_ymax > maxY)
-                maxY = item.bbox_ymax
+            // Check that the item was found
+            if(item.id === undefined) {
+                console.log(`Failed to locate item at index ${index}`);
+            }
+            else {
+                if(item.bbox_xmin !== 'N/A' && parseFloat(item.bbox_xmin) > minX) {
+                    minX = item.bbox_xmin;
+                    // console.log(`Updated x min to ${minX} from layer ${item.title}`)
+                }
+                if(item.bbox_xmax !== 'N/A' && parseFloat(item.bbox_xmax) < maxX) {
+                    maxX = item.bbox_xmax;
+                    // console.log(`Updated x max to ${maxX} from layer ${item.title}`)
+                }
+                if(item.bbox_ymin !== 'N/A' && parseFloat(item.bbox_ymin) > minY) {
+                    minY = item.bbox_ymin;
+                    // console.log(`Updated y min to ${minY} from layer ${item.title}`)
+                }
+                if(item.bbox_ymax !== 'N/A' && parseFloat(item.bbox_ymax) < maxY) {
+                    maxY = item.bbox_ymax ;
+                    // console.log(`Updated y max to ${minY} from layer ${item.title}`)
+                }
+            }
         });
 
-        this.setState({ selectionStartDate: maxStartTime,
+        if(minX < -180.0) {
+            console.log(`Bounding invalid x min: ${minX} to -180.0`);
+            minX = -180.0;
+        }
+        if(maxX > 180.0) {
+            console.log(`Bounding invalid x max: ${maxX} to 180.0`);
+            maxX = 180.0;
+        }
+        if(minY < -90.0) {
+            console.log(`Bounding invalid y min: ${minY} to -90.0`);
+            minY = -90.0;
+        }
+        if(maxY > 90.0) {
+            console.log(`Bounding invalid y max: ${maxY} to 90.0`);
+            maxY = 90.0;
+        }
+
+        this.setState({
+            selectionStartDate: maxStartTime,
             selectionEndDate: minEndTime,
             startDateValue: maxStartTime,
             endDateValue: minEndTime,
+            useStartAndEndDate: useStartAndEndDate,
             selectionBBoxXMin: minX,
             selectionBBoxXMax: maxX,
             selectionBBoxYMin: minY,
@@ -412,7 +509,32 @@ class ImageFrame extends React.Component {
         }
         else
         {
-            overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick().then(); }}>Fetch Data</Button>;
+            overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick(); }}>Fetch Data</Button>;
+        }
+
+        // Create a component for the slider
+        let sliderComponent;
+        if(this.state.maxFrame <= 0) {  // True if there is only one image loaded
+            sliderComponent = <div></div>;
+        }
+        else {
+            sliderComponent =
+                <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
+                    <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
+                        {pausePlayIcon}
+                    </SvgIcon>
+                    <Slider
+                        id="image-frame-slider"
+                        aria-label="Image Index"
+                        value={this.state.currentFrame + 1}
+                        valueLabelDisplay="auto"
+                        step={1}
+                        marks
+                        min={this.state.minFrame + 1}
+                        max={this.state.maxFrame + 1}
+                        onChange={(e, val) => { this.handleSliderInput(val); }}
+                    />
+                </Stack>;
         }
 
         return (
@@ -445,22 +567,7 @@ class ImageFrame extends React.Component {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
-                                                <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
-                                                    {pausePlayIcon}
-                                                </SvgIcon>
-                                                <Slider
-                                                    id="image-frame-slider"
-                                                    aria-label="Image Index"
-                                                    value={this.state.currentFrame + 1}
-                                                    valueLabelDisplay="auto"
-                                                    step={1}
-                                                    marks
-                                                    min={this.state.minFrame + 1}
-                                                    max={this.state.maxFrame + 1}
-                                                    onChange={(e, val) => { this.handleSliderInput(val); }}
-                                                />
-                                            </Stack>
+                                            {sliderComponent}
                                         </td>
                                     </tr>
                                     </tbody>
@@ -471,16 +578,18 @@ class ImageFrame extends React.Component {
                             <Stack sx={{ height: '87vh', width: '20vw' }} spacing={2} alignItems="stretch" justifyContent="flex-start">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DateTimePicker
-                                        label={"Start"}
+                                        label={"Start date"}
                                         renderInput={(params) => <TextField {...params} />}
+                                        disabled={!this.state.useStartAndEndDate}
                                         value={this.state.startDateValue}
                                         onChange={(value) => {
                                             this.setState({startDateValue: value});
                                         }}
                                     />
                                     <DateTimePicker
-                                        label={"End"}
+                                        label={"End date"}
                                         renderInput={(params) => <TextField {...params} />}
+                                        disabled={!this.state.useStartAndEndDate}
                                         value={this.state.endDateValue}
                                         onChange={(value) => {
                                             this.setState({endDateValue: value});
@@ -583,47 +692,73 @@ class ImageFrame extends React.Component {
                                 <div className={"user-controls-spacing-div"}>
                                     <p></p>
                                 </div>
-                                <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="center">
+                                <Stack direction="row"
+                                       spacing={2}
+                                       justifyContent="space-evenly"
+                                       alignItems="center"
+                                       component="form"
+                                       sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}}
+                                       noValidate
+                                       autoComplete="off">
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Lower X Bound"}
                                                type="number"
+                                               error={this.state.selectionBBoxXMinError}
                                                value={this.state.selectionBBoxXMinValue}
-                                               InputProps={{ inputProps: { min: this.state.selectionBBoxXMin, max: this.state.selectionBBoxXMaxValue } }}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxXMin: event.target.value});
+                                                   this.setState({
+                                                       selectionBBoxXMinValue: event.target.value,
+                                                       selectionBBoxXMinError: (event.target.value < (this.state.selectionBBoxXMin - 0.0001) || event.target.value > this.state.selectionBBoxXMaxValue)
+                                                   });
                                                }}
                                     />
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Upper X Bound"}
                                                type="number"
+                                               error={this.state.selectionBBoxXMaxError}
                                                value={this.state.selectionBBoxXMaxValue}
-                                               InputProps={{ inputProps: { min: this.state.selectionBBoxXMinValue, max: this.state.selectionBBoxXMax } }}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxXMax: event.target.value});
+                                                   this.setState({
+                                                       selectionBBoxXMaxValue: event.target.value,
+                                                       selectionBBoxXMaxError: (event.target.value > (this.state.selectionBBoxXMax + 0.0001) || event.target.value < this.state.selectionBBoxXMinValue)
+                                                   });
                                                }}
                                     />
                                 </Stack>
-                                <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="center">
+                                <Stack direction="row"
+                                       spacing={2}
+                                       justifyContent="space-evenly"
+                                       alignItems="center"
+                                       component="form"
+                                       sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}}
+                                       noValidate
+                                       autoComplete="off">
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Lower Y Bound"}
                                                type="number"
+                                               error={this.state.selectionBBoxYMinError}
                                                value={this.state.selectionBBoxYMinValue}
-                                               InputProps={{ inputProps: { min: this.state.selectionBBoxYMin, max: this.state.selectionBBoxYMaxValue } }}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxYMin: event.target.value});
+                                                   this.setState({
+                                                       selectionBBoxYMinValue: event.target.value,
+                                                       selectionBBoxYMinError: (event.target.value < (this.state.selectionBBoxYMin - 0.0001) || event.target.value > this.state.selectionBBoxYMaxValue)
+                                                   });
                                                }}
                                     />
                                     <TextField style={{minWidth: 150}}
                                                className="bbox-selector"
                                                label={"Upper Y Bound"}
                                                type="number"
+                                               error={this.state.selectionBBoxYMaxError}
                                                value={this.state.selectionBBoxYMaxValue}
-                                               InputProps={{ inputProps: { min: this.state.selectionBBoxYMinValue, max: this.state.selectionBBoxYMax } }}
                                                onChange={(event) => {
-                                                   this.setState({selectionBBoxYMax: event.target.value});
+                                                   this.setState({
+                                                       selectionBBoxYMaxValue: event.target.value,
+                                                       selectionBBoxYMaxError: (event.target.value > (this.state.selectionBBoxYMax + 0.0001) || event.target.value < this.state.selectionBBoxYMinValue)
+                                                   });
                                                }}
                                     />
                                 </Stack>
