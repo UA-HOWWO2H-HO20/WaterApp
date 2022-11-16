@@ -63,6 +63,12 @@ class ImageFrame extends React.Component {
                 width: 160
             },
             {
+                field: 'static',
+                headerName: 'Static?',
+                sortable: false,
+                width: 80
+            },
+            {
                 field: 'start_date',
                 headerName: 'Start Date',
                 sortable: false,
@@ -95,6 +101,12 @@ class ImageFrame extends React.Component {
             {
                 field: 'bbox_ymax',
                 headerName: 'YMax',
+                sortable: false,
+                width: 80
+            },
+            {
+                field: 'srs',
+                headerName: 'Projection (SRS)',
                 sortable: false,
                 width: 80
             }];
@@ -478,6 +490,31 @@ class ImageFrame extends React.Component {
             overlaySelectorButton = <Button id="metadata-grid-button" variant="contained" onClick={() => { this.handleOverlayButtonClick(); }}>Fetch Data</Button>;
         }
 
+        // Create a component for the slider
+        let sliderComponent;
+        if(this.state.maxFrame <= 0) {  // True if there is only one image loaded
+            sliderComponent = <div></div>;
+        }
+        else {
+            sliderComponent =
+                <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
+                    <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
+                        {pausePlayIcon}
+                    </SvgIcon>
+                    <Slider
+                        id="image-frame-slider"
+                        aria-label="Image Index"
+                        value={this.state.currentFrame + 1}
+                        valueLabelDisplay="auto"
+                        step={1}
+                        marks
+                        min={this.state.minFrame + 1}
+                        max={this.state.maxFrame + 1}
+                        onChange={(e, val) => { this.handleSliderInput(val); }}
+                    />
+                </Stack>;
+        }
+
         return (
             <div className={"map-container"}>
                 <table className={"map-table"}>
@@ -508,22 +545,7 @@ class ImageFrame extends React.Component {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" justifyContent="center">
-                                                <SvgIcon id="image-play-button" color="primary" onClick={() => { this.handlePlayButtonClick(); }}>
-                                                    {pausePlayIcon}
-                                                </SvgIcon>
-                                                <Slider
-                                                    id="image-frame-slider"
-                                                    aria-label="Image Index"
-                                                    value={this.state.currentFrame + 1}
-                                                    valueLabelDisplay="auto"
-                                                    step={1}
-                                                    marks
-                                                    min={this.state.minFrame + 1}
-                                                    max={this.state.maxFrame + 1}
-                                                    onChange={(e, val) => { this.handleSliderInput(val); }}
-                                                />
-                                            </Stack>
+                                            {sliderComponent}
                                         </td>
                                     </tr>
                                     </tbody>
