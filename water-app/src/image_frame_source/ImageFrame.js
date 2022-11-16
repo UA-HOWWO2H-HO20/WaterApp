@@ -425,24 +425,38 @@ class ImageFrame extends React.Component {
                 }
             }
 
-            if(item.bbox_xmin !== 'N/A' && item.bbox_xmin > minX)
-                minX = item.bbox_xmin
-            if(item.bbox_xmax !== 'N/A' && item.bbox_xmax < maxX)
-                maxX = item.bbox_xmax
-            if(item.bbox_ymin !== 'N/A' && item.bbox_ymin > minY)
-                minY = item.bbox_ymin
-            if(item.bbox_ymax !== 'N/A' && item.bbox_ymax < maxY)
-                maxY = item.bbox_ymax
+            // Check that the item was found
+            if(item.id === undefined) {
+                console.log(`Failed to locate item at index ${index}`);
+            }
+            else {
+                if(item.bbox_xmin !== 'N/A' && item.bbox_xmin > minX)
+                    minX = item.bbox_xmin;
+                if(item.bbox_xmax !== 'N/A' && item.bbox_xmax < maxX)
+                    maxX = item.bbox_xmax;
+                if(item.bbox_ymin !== 'N/A' && item.bbox_ymin > minY)
+                    minY = item.bbox_ymin;
+                if(item.bbox_ymax !== 'N/A' && item.bbox_ymax < maxY)
+                    maxY = item.bbox_ymax ;
+            }
         });
 
-        if(minX < -180.0)
-            minX = -180.0
-        if(maxX > 180.0)
-            maxX = 180.0
-        if(minY < -90.0)
-            minY = 90.0
-        if(maxY > 90.0)
-            maxY = 90.0
+        if(minX < -180.0) {
+            console.log(`Bounding invalid x min: ${minX}`);
+            minX = -180.0;
+        }
+        if(maxX > 180.0) {
+            console.log(`Bounding invalid x max: ${maxX}`);
+            maxX = 180.0;
+        }
+        if(minY < -90.0) {
+            console.log(`Bounding invalid y min: ${minY}`);
+            minY = 90.0;
+        }
+        if(maxY > 90.0) {
+            console.log(`Bounding invalid y max: ${maxY}`);
+            maxY = 90.0;
+        }
 
         this.setState({
             selectionStartDate: maxStartTime,
