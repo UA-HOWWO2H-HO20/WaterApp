@@ -46,6 +46,15 @@ services:
     networks:
       - internal-network
 
+  stream-data:
+    image: postgis/postgis
+    volumes:
+      - ./stream-data:/docker-entrypoint-initdb.d
+    networks:
+      - internal-network
+    environment:
+      POSTGRES_PASSWORD: password
+
 volumes:
   geoserver-volume:
   osm-data:

@@ -6,9 +6,15 @@
       <sld:FeatureTypeStyle>
         <sld:Rule>
           <sld:Title>teal line</sld:Title>
+          <ogc:Filter>
+            <ogc:PropertyIsEqualTo>
+              <ogc:PropertyName>place</ogc:PropertyName>
+              <ogc:Literal>county</ogc:Literal>
+            </ogc:PropertyIsEqualTo>
+          </ogc:Filter>
           <sld:LineSymbolizer>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#00cc33</sld:CssParameter>
+              <sld:CssParameter name="stroke">#70cbff</sld:CssParameter>
               <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
             </sld:Stroke>
           </sld:LineSymbolizer>
