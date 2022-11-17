@@ -1,0 +1,6 @@
+/* @title teal line */
+* {
+    stroke: hsl(270, 67%, 85%);
+  stroke: #a3ddff;
+  stroke-width: 0.5px;
+}

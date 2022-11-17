@@ -9,6 +9,12 @@
   <internationalAbstract/>
   <publishables>
     <published type="layer">
+      <id>LayerInfoImpl--3cec06ff:1846a9df119:-7ffd</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl--3cec06ff:1846aa3f328:2fe</id>
+    </published>
+    <published type="layer">
       <id>LayerInfoImpl--32609f8e:1846ac35a36:-3cbc</id>
     </published>
     <published type="layer">
@@ -17,19 +23,25 @@
   </publishables>
   <styles>
     <style>
-      <id>StyleInfoImpl--32609f8e:1846ad6a4d0:-66</id>
+      <id>StyleInfoImpl--32609f8e:1846ac0e842:-37af</id>
     </style>
     <style>
-      <id>StyleInfoImpl--32609f8e:1846ac0e842:-37af</id>
+      <id>StyleInfoImpl--32609f8e:1846ab6b958:-7fff</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--13830a05:18473049a16:-40af</id>
+    </style>
+    <style>
+      <id>StyleInfoImpl--13830a05:18472ffc0f6:-7fff</id>
     </style>
   </styles>
   <bounds>
-    <minx>-2.003751E7</minx>
-    <maxx>2.003751E7</maxx>
-    <miny>-1.477665E7</miny>
-    <maxy>2.003751E7</maxy>
-    <crs class="projected">EPSG:3857</crs>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-90.0</miny>
+    <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
   </bounds>
   <dateCreated>2022-11-12 07:48:51.639 UTC</dateCreated>
-  <dateModified>2022-11-12 08:00:02.336 UTC</dateModified>
+  <dateModified>2022-11-13 23:32:31.551 UTC</dateModified>
 </layerGroup>

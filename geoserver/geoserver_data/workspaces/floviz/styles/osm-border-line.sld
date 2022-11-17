@@ -5,21 +5,12 @@
       <sld:Name>Default Styler</sld:Name>
       <sld:FeatureTypeStyle>
         <sld:Rule>
-          <sld:Title>gold polygon</sld:Title>
-          <ogc:Filter>
-            <ogc:And>
-              <ogc:PropertyIsEqualTo>
-                <ogc:PropertyName>place</ogc:PropertyName>
-                <ogc:Literal>county</ogc:Literal>
-              </ogc:PropertyIsEqualTo>
-              <ogc:PropertyIsEqualTo>
-                <ogc:PropertyName>name</ogc:PropertyName>
-                <ogc:Literal>Chattoogaa County</ogc:Literal>
-              </ogc:PropertyIsEqualTo>
-            </ogc:And>
-          </ogc:Filter>
+          <sld:Title>teal line</sld:Title>
           <sld:LineSymbolizer>
-            <sld:Stroke/>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#a3ddff</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
+            </sld:Stroke>
           </sld:LineSymbolizer>
         </sld:Rule>
         <sld:VendorOption name="ruleEvaluation">first</sld:VendorOption>

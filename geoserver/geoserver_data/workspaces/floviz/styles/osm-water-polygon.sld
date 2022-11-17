@@ -5,19 +5,15 @@
       <sld:Name>Default Styler</sld:Name>
       <sld:FeatureTypeStyle>
         <sld:Rule>
-          <sld:Title>teal line</sld:Title>
-          <ogc:Filter>
-            <ogc:PropertyIsEqualTo>
-              <ogc:PropertyName>place</ogc:PropertyName>
-              <ogc:Literal>county</ogc:Literal>
-            </ogc:PropertyIsEqualTo>
-          </ogc:Filter>
-          <sld:LineSymbolizer>
+          <sld:PolygonSymbolizer>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#38b6ff</sld:CssParameter>
+            </sld:Fill>
             <sld:Stroke>
-              <sld:CssParameter name="stroke">#70cbff</sld:CssParameter>
-              <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+              <sld:CssParameter name="stroke">#38b6ff</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
             </sld:Stroke>
-          </sld:LineSymbolizer>
+          </sld:PolygonSymbolizer>
         </sld:Rule>
         <sld:VendorOption name="ruleEvaluation">first</sld:VendorOption>
       </sld:FeatureTypeStyle>
