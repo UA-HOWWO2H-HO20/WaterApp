@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
+  <sld:NamedLayer>
+    <sld:Name>Default Styler</sld:Name>
+    <sld:UserStyle>
+      <sld:Name>Default Styler</sld:Name>
+      <sld:FeatureTypeStyle>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:PropertyIsLessThan>
+              <ogc:PropertyName>flow</ogc:PropertyName>
+              <ogc:Literal>1</ogc:Literal>
+            </ogc:PropertyIsLessThan>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#440154</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>1</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>5</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#482173</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>5</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>10</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#433e85</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>10</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>50</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#38588c</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>50</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>100</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#2d708e</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>100</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>500</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#25858e</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>500</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>1000</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#1e9b8a</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>1000</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>5000</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#2ab07f</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>5000</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>10000</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#52c569</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>10000</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>50000</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#86d549</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>50000</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThan>
+                <ogc:PropertyName>flow</ogc:PropertyName>
+                <ogc:Literal>100000</ogc:Literal>
+              </ogc:PropertyIsLessThan>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#c2df23</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Title>cyan point</sld:Title>
+          <ogc:Filter>
+            <ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyName>flow</ogc:PropertyName>
+              <ogc:Literal>100000</ogc:Literal>
+            </ogc:PropertyIsGreaterThanOrEqualTo>
+          </ogc:Filter>
+          <sld:PointSymbolizer>
+            <sld:Graphic>
+              <sld:Mark>
+                <sld:Fill>
+                  <sld:CssParameter name="fill">#fde725</sld:CssParameter>
+                </sld:Fill>
+              </sld:Mark>
+              <sld:Size>10</sld:Size>
+            </sld:Graphic>
+          </sld:PointSymbolizer>
+        </sld:Rule>
+        <sld:VendorOption name="ruleEvaluation">first</sld:VendorOption>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>
+

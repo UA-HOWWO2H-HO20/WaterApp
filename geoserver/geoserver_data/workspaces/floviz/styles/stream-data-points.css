@@ -1,0 +1,18 @@
+/* @title cyan point */
+* {
+  mark: symbol(square);
+  mark-size: 10px;
+}
+
+*:mark [flow < 1]                        { fill: #440154; }
+*:mark [flow < 5]       [flow >= 1]      { fill: #482173; }
+*:mark [flow < 10]      [flow >= 5]      { fill: #433e85; }
+*:mark [flow < 50]      [flow >= 10]     { fill: #38588c; }
+*:mark [flow < 100]     [flow >= 50]     { fill: #2d708e; }
+*:mark [flow < 500]     [flow >= 100]    { fill: #25858e; }
+*:mark [flow < 1000]    [flow >= 500]    { fill: #1e9b8a; }
+*:mark [flow < 5000]    [flow >= 1000]   { fill: #2ab07f; }
+*:mark [flow < 10000]   [flow >= 5000]   { fill: #52c569; }
+*:mark [flow < 50000]   [flow >= 10000]  { fill: #86d549; }
+*:mark [flow < 100000]  [flow >= 50000]  { fill: #c2df23; }
+*:mark [flow >= 100000]                  { fill: #fde725; }

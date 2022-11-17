@@ -1,0 +1,64 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--58a86bfc:18483822fff:4199</id>
+  <name>stream-data-stations</name>
+  <nativeName>geometries</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-4742b9d2:183f57510e6:-7ffd</id>
+  </namespace>
+  <title>stream-data-stations</title>
+  <keywords>
+    <string>features</string>
+    <string>geometries</string>
+  </keywords>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-88.40996551513672</minx>
+    <maxx>-84.99803924560547</maxx>
+    <miny>30.365522384643555</miny>
+    <maxy>34.95698165893555</maxy>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-88.40996551513672</minx>
+    <maxx>-84.99803924560547</maxx>
+    <miny>30.365522384643555</miny>
+    <maxy>34.95698165893555</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="elevation">
+      <dimensionInfo>
+        <enabled>false</enabled>
+      </dimensionInfo>
+    </entry>
+    <entry key="time">
+      <dimensionInfo>
+        <enabled>true</enabled>
+        <attribute>time</attribute>
+        <presentation>LIST</presentation>
+        <units>ISO8601</units>
+        <defaultValue>
+          <strategy>MINIMUM</strategy>
+        </defaultValue>
+        <nearestMatchEnabled>true</nearestMatchEnabled>
+        <rawNearestMatchEnabled>false</rawNearestMatchEnabled>
+      </dimensionInfo>
+    </entry>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-384d3ccb:1847d605270:-7fff</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <internationalTitle/>
+  <internationalAbstract/>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <padWithZeros>false</padWithZeros>
+  <forcedDecimal>false</forcedDecimal>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

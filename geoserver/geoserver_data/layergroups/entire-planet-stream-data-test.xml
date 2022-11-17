@@ -3,6 +3,7 @@
   <name>entire-planet-stream-data-test</name>
   <mode>SINGLE</mode>
   <title>entire-planet-stream-data-test</title>
+  <enabled>false</enabled>
   <internationalTitle/>
   <internationalAbstract/>
   <publishables>
@@ -27,4 +28,5 @@
     <crs>EPSG:4326</crs>
   </bounds>
   <dateCreated>2022-11-16 23:11:45.588 UTC</dateCreated>
+  <dateModified>2022-11-17 01:56:06.751 UTC</dateModified>
 </layerGroup>

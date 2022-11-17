@@ -1,0 +1,9 @@
+/* @title cyan point */
+* { 
+  label: [flow];
+  label-anchor: 0.5 -1;
+  font-family: "Monospaced";
+  font-fill: black;
+  font-style: normal;
+  font-size: 12;
+}

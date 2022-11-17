@@ -1,0 +1,17 @@
+<layer>
+  <name>stream-data-stations</name>
+  <id>LayerInfoImpl--58a86bfc:18483822fff:419a</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--58a86bfc:18483822fff:419b</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--58a86bfc:18483822fff:4199</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-11-17 03:00:03.308 UTC</dateCreated>
+  <dateModified>2022-11-17 03:05:47.569 UTC</dateModified>
+</layer>
